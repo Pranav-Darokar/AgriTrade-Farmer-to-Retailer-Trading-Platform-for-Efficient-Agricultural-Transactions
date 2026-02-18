@@ -28,7 +28,7 @@ const Marketplace = () => {
     const fetchProducts = async () => {
         try {
             // Public endpoint
-            const response = await axios.get('http://localhost:8080/api/public/products');
+            const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/public/products`);
             setProducts(response.data);
         } catch (err) {
             console.error(err);

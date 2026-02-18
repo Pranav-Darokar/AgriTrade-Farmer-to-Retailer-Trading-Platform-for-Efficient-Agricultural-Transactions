@@ -48,7 +48,7 @@ const Profile = () => {
             };
 
             // Update Profile Details
-            await axios.put(`http://localhost:8080/api/users/${user.id}`, formData, config);
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/users/${user.id}`, formData, config);
 
             // Upload Photo if selected
             let photoUrl = user.profilePhoto;
@@ -57,7 +57,7 @@ const Profile = () => {
                 formDataImage.append("file", selectedFile);
 
                 const uploadResponse = await axios.post(
-                    `http://localhost:8080/api/users/${user.id}/photo`,
+                    `${import.meta.env.VITE_API_BASE_URL}/api/users/${user.id}/photo`,
                     formDataImage,
                     {
                         headers: {
@@ -93,7 +93,7 @@ const Profile = () => {
                         <div className="h-32 w-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center overflow-hidden relative">
                             {previewUrl || user.profilePhoto ? (
                                 <img
-                                    src={previewUrl || `http://localhost:8080${user.profilePhoto}`}
+                                    src={previewUrl || `${import.meta.env.VITE_API_BASE_URL}${user.profilePhoto}`}
                                     alt="Profile"
                                     className="h-full w-full object-cover"
                                 />

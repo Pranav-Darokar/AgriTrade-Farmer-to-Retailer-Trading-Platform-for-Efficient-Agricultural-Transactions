@@ -45,7 +45,7 @@ const AddProduct = () => {
             const userData = JSON.parse(localStorage.getItem('user'));
             const token = userData?.token;
 
-            const response = await axios.post('http://localhost:8080/api/upload', uploadData, {
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, uploadData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`
@@ -86,7 +86,7 @@ const AddProduct = () => {
             const productData = { ...formData, imageUrl: finalImageUrl };
 
             await axios.post(
-                'http://localhost:8080/api/farmer/products',
+                `${import.meta.env.VITE_API_BASE_URL}/api/farmer/products`,
                 productData,
                 {
                     headers: {

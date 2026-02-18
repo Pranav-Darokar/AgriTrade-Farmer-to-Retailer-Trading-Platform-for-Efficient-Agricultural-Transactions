@@ -48,7 +48,7 @@ const EditProduct = () => {
             // OR use the public list.
             // For now, let's fetch "my products" and find it. This is safer although less efficient.
 
-            const response = await axios.get('http://localhost:8080/api/farmer/products', {
+            const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/farmer/products`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -101,7 +101,7 @@ const EditProduct = () => {
             const userData = JSON.parse(localStorage.getItem('user'));
             const token = userData?.token;
 
-            const response = await axios.post('http://localhost:8080/api/upload', uploadData, {
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, uploadData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`
@@ -141,7 +141,7 @@ const EditProduct = () => {
             const productData = { ...formData, imageUrl: finalImageUrl };
 
             await axios.put(
-                `http://localhost:8080/api/farmer/products/${id}`,
+                `${import.meta.env.VITE_API_BASE_URL}/api/farmer/products/${id}`,
                 productData,
                 {
                     headers: {

@@ -19,7 +19,7 @@ const MyProducts = () => {
             const userData = JSON.parse(localStorage.getItem('user'));
             const token = userData?.token;
 
-            const response = await axios.get('http://localhost:8080/api/farmer/products', {
+            const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/farmer/products`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -40,7 +40,7 @@ const MyProducts = () => {
             const userData = JSON.parse(localStorage.getItem('user'));
             const token = userData?.token;
 
-            await axios.delete(`http://localhost:8080/api/farmer/products/${id}`, {
+            await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/farmer/products/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

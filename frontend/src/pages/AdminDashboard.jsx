@@ -23,8 +23,8 @@ const AdminDashboard = () => {
             try {
                 setLoading(true);
                 const [statsRes, usersRes] = await Promise.all([
-                    axios.get('http://localhost:8080/api/admin/stats', authConfig),
-                    axios.get('http://localhost:8080/api/admin/users', authConfig)
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/stats`, authConfig),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/users`, authConfig)
                 ]);
 
                 setStats(statsRes.data);
@@ -44,7 +44,7 @@ const AdminDashboard = () => {
     const handleDeleteUser = async (userId) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
-                await axios.delete(`http://localhost:8080/api/admin/users/${userId}`, authConfig);
+                await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/admin/users/${userId}`, authConfig);
                 setRefreshTrigger(prev => prev + 1); // Refresh data
             } catch (error) {
                 console.error("Error deleting user:", error);
@@ -60,7 +60,7 @@ const AdminDashboard = () => {
 
     const handleUpdateStatus = async (userId, status) => {
         try {
-            await axios.put(`http://localhost:8080/api/admin/users/${userId}/status`, { status }, authConfig);
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/admin/users/${userId}/status`, { status }, authConfig);
             setRefreshTrigger(prev => prev + 1);
         } catch (error) {
             console.error("Error updating user status:", error);

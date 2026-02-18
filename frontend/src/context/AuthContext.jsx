@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/signin", {
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/signin`, {
                 email,
                 password,
             });
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (signupData) => {
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/signup", signupData);
+            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/signup`, signupData);
             return response.data;
         } catch (error) {
             throw error;
