@@ -28,8 +28,8 @@ public class OrderService {
     private UserRepository userRepository;
 
     @Transactional
-    public Order placeOrder(OrderRequest orderRequest, String username) {
-        User retailer = userRepository.findByUsername(username)
+    public Order placeOrder(OrderRequest orderRequest, String email) {
+        User retailer = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (retailer.getRole() != Role.RETAILER) {
@@ -74,9 +74,19 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public List<Order> getOrdersByRetailer(String username) {
-        User retailer = userRepository.findByUsername(username)
+    public List<Order> getOrdersByRetailer(String email) {
+        User retailer = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return orderRepository.findByRetailer(retailer);
+    }
+
+    public List<Order> getOrdersByFarmer(String email) {
+        User farmer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return orderRepository.findDistinctByItemsProductFarmer(farmer);
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 }

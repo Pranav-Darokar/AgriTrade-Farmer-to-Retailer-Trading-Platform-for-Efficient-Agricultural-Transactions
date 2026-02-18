@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/retailer/orders")
+@RequestMapping("/api/orders")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class OrderController {
 
@@ -32,5 +32,18 @@ public class OrderController {
     public List<Order> getMyOrders() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return orderService.getOrdersByRetailer(auth.getName());
+    }
+
+    @GetMapping("/farmer")
+    @PreAuthorize("hasAuthority('FARMER')")
+    public List<Order> getMyOrdersFarmer() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return orderService.getOrdersByFarmer(auth.getName());
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<Order> getAllOrders() {
+        return orderService.getAllOrders();
     }
 }

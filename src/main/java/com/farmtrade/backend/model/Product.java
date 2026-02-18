@@ -26,13 +26,19 @@ public class Product {
 
     private String description;
 
+    @Column(length = 2048)
+    private String imageUrl;
+
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
     private BigDecimal price;
 
     @Min(value = 0, message = "Quantity cannot be negative")
     private Integer quantity;
 
+    private String unit;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "farmer_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private User farmer;
 }

@@ -18,15 +18,15 @@ public class ProductService {
     @Autowired
     private UserRepository userRepository;
 
-    public Product addProduct(Product product, String username) {
-        User farmer = userRepository.findByUsername(username)
+    public Product addProduct(Product product, String email) {
+        User farmer = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Farmer not found"));
         product.setFarmer(farmer);
         return productRepository.save(product);
     }
 
-    public List<Product> getProductsByFarmer(String username) {
-        User farmer = userRepository.findByUsername(username)
+    public List<Product> getProductsByFarmer(String email) {
+        User farmer = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Farmer not found"));
         return productRepository.findByFarmer(farmer);
     }
@@ -41,10 +41,10 @@ public class ProductService {
     }
 
     @Transactional
-    public Product updateProduct(Long id, Product productDetails, String username) {
+    public Product updateProduct(Long id, Product productDetails, String email) {
         Product product = getProductById(id);
 
-        if (!product.getFarmer().getUsername().equals(username)) {
+        if (!product.getFarmer().getEmail().equals(email)) {
             throw new RuntimeException("You are not authorized to update this product");
         }
 
@@ -52,15 +52,17 @@ public class ProductService {
         product.setDescription(productDetails.getDescription());
         product.setPrice(productDetails.getPrice());
         product.setQuantity(productDetails.getQuantity());
+        product.setUnit(productDetails.getUnit());
+        product.setImageUrl(productDetails.getImageUrl());
 
         return productRepository.save(product);
     }
 
     @Transactional
-    public void deleteProduct(Long id, String username) {
+    public void deleteProduct(Long id, String email) {
         Product product = getProductById(id);
 
-        if (!product.getFarmer().getUsername().equals(username)) {
+        if (!product.getFarmer().getEmail().equals(email)) {
             throw new RuntimeException("You are not authorized to delete this product");
         }
 

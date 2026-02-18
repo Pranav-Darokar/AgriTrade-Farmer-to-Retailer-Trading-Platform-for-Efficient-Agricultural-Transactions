@@ -57,7 +57,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/farmer/products/{id}")
-    @PreAuthorize("hasAuthority('FARMER')")
+    @PreAuthorize("hasAuthority('FARMER') or hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         productService.deleteProduct(id, auth.getName());

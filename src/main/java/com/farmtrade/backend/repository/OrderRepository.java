@@ -10,4 +10,9 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByRetailer(User retailer);
+
+    List<Order> findDistinctByItemsProductFarmer(User farmer);
+
+    @org.springframework.data.jpa.repository.Query("SELECT SUM(o.totalAmount) FROM Order o")
+    java.math.BigDecimal sumTotalRevenue();
 }

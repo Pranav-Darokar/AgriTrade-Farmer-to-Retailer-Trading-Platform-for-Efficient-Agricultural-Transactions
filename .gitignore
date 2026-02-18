@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Logs
+backend.log
+backend_debug.log
+run.log
+
+# Temp Data
+users.json
+test_upload.jpg
+uploads/
