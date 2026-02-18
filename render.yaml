@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: farmtrade-backend
+    env: docker
+    plan: free
+    branch: main
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false  # You will be prompted to enter this in the dashboard
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
