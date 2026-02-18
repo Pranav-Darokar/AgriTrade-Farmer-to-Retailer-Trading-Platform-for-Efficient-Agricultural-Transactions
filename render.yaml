@@ -6,10 +6,10 @@ services:
     branch: main
     envVars:
       - key: SPRING_DATASOURCE_URL
-        sync: false  # You will be prompted to enter this in the dashboard
+        value: jdbc:postgresql://ep-spring-salad-aivnukkz-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require
       - key: SPRING_DATASOURCE_USERNAME
-        sync: false
+        value: neondb_owner
       - key: SPRING_DATASOURCE_PASSWORD
-        sync: false
+        value: npg_frDvEBU4V5Wm
       - key: JWT_SECRET
         generateValue: true
