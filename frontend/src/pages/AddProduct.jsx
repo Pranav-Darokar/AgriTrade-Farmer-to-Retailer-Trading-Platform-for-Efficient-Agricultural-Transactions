@@ -16,7 +16,9 @@ const AddProduct = () => {
         description: '',
         price: '',
         quantity: '',
-        imageUrl: ''
+        unit: 'Kg',
+        imageUrl: '',
+        category: 'Fresh Vegetables'
     });
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -212,6 +214,27 @@ const AddProduct = () => {
                                         <option value="Box">Box</option>
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                            <div className="relative rounded-md shadow-sm">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Tag className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <select
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleChange}
+                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg p-3 border"
+                                >
+                                    <option value="Fresh Vegetables">Fresh Vegetables</option>
+                                    <option value="Fruits">Fruits</option>
+                                    <option value="Grains & Pulses">Grains & Pulses</option>
+                                    <option value="Dairy">Dairy</option>
+                                    <option value="Essentials">Essentials</option>
+                                </select>
                             </div>
                         </div>
                     </div>

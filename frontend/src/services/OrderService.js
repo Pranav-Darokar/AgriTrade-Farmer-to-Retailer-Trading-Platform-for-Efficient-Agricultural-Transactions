@@ -22,10 +22,25 @@ const getFarmerOrders = async () => {
     return response.data;
 };
 
+const cancelOrder = async (orderId) => {
+    const response = await axios.delete(`${API_URL}/${orderId}`, { headers: getAuthHeader() });
+    return response.data;
+};
+
+const updateOrderStatus = async (orderId, status) => {
+    const response = await axios.patch(`${API_URL}/${orderId}/status`, null, {
+        params: { status },
+        headers: getAuthHeader()
+    });
+    return response.data;
+};
+
 const OrderService = {
     placeOrder,
     getMyOrders,
-    getFarmerOrders
+    getFarmerOrders,
+    cancelOrder,
+    updateOrderStatus
 };
 
 export default OrderService;

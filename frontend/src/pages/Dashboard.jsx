@@ -105,6 +105,15 @@ const Dashboard = () => {
                                         <p className="text-sm text-gray-500">Manage your current inventory</p>
                                     </div>
                                 </Link>
+                                <Link to="/farmer-orders" className="group flex items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-orange-200">
+                                    <div className="p-3 bg-orange-50 rounded-lg group-hover:bg-orange-100 transition-colors">
+                                        <ShoppingBag className="h-6 w-6 text-orange-600" />
+                                    </div>
+                                    <div className="ml-4">
+                                        <p className="text-lg font-medium text-gray-900">Incoming Orders</p>
+                                        <p className="text-sm text-gray-500">Manage and fulfil retailer orders</p>
+                                    </div>
+                                </Link>
                             </>
                         )}
 
@@ -119,7 +128,7 @@ const Dashboard = () => {
                                         <p className="text-sm text-gray-500">Find fresh produce near you</p>
                                     </div>
                                 </Link>
-                                <Link to="/orders" className="group flex items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-green-200">
+                                <Link to="/my-orders" className="group flex items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-green-200">
                                     <div className="p-3 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
                                         <List className="h-6 w-6 text-blue-600" />
                                     </div>

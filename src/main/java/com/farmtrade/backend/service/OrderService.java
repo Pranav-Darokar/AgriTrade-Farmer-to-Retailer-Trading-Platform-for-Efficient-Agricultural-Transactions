@@ -89,4 +89,58 @@ public class OrderService {
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
+
+    @Transactional
+    public Order cancelOrder(Long orderId, String email) {
+        User retailer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+
+        // Only the retailer who placed the order can cancel it
+        if (!order.getRetailer().getId().equals(retailer.getId())) {
+            throw new RuntimeException("You are not authorized to cancel this order");
+        }
+
+        // Only PENDING orders can be cancelled
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new RuntimeException("Only PENDING orders can be cancelled");
+        }
+
+        // Restore stock for each item
+        for (OrderItem item : order.getItems()) {
+            Product product = item.getProduct();
+            product.setQuantity(product.getQuantity() + item.getQuantity());
+            productRepository.save(product);
+        }
+
+        order.setStatus(OrderStatus.CANCELLED);
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order updateOrderStatus(Long orderId, String newStatus, String email) {
+        User farmer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+
+        // Verify the farmer has at least one product in this order
+        boolean isFarmerOrder = order.getItems().stream()
+                .anyMatch(item -> item.getProduct().getFarmer().getId().equals(farmer.getId()));
+        if (!isFarmerOrder) {
+            throw new RuntimeException("You are not authorized to update this order");
+        }
+
+        try {
+            OrderStatus status = OrderStatus.valueOf(newStatus);
+            order.setStatus(status);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid order status: " + newStatus);
+        }
+
+        return orderRepository.save(order);
+    }
 }

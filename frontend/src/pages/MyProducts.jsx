@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { Edit, Trash2, Plus, Package, IndianRupee } from 'lucide-react';
+import { Edit, Trash2, Plus, Package, IndianRupee, X, EyeOff, Eye } from 'lucide-react';
 
 const MyProducts = () => {
     const { user } = useAuth();
@@ -30,6 +30,41 @@ const MyProducts = () => {
             setError('Failed to fetch your products.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const toggleStockStatus = async (product) => {
+        const isCurrentlyOutOfStock = product.quantity <= 0;
+        const confirmMsg = isCurrentlyOutOfStock
+            ? `Mark "${product.name}" as in stock? (Quantity will be set to 50)`
+            : `Mark "${product.name}" as out of stock? (Quantity will be set to 0)`;
+
+        if (!window.confirm(confirmMsg)) return;
+
+        try {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            const token = userData?.token;
+
+            const newQuantity = isCurrentlyOutOfStock ? 50 : 0;
+            const updatedProduct = { ...product, quantity: newQuantity };
+
+            console.log(`Updating product ${product.id} quantity to ${newQuantity}`);
+
+            const response = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/farmer/products/${product.id}`, updatedProduct, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log('Update response:', response.data);
+
+            // Use functional update for better state reliability
+            setProducts(prevProducts =>
+                prevProducts.map(p => p.id === product.id ? { ...p, quantity: newQuantity } : p)
+            );
+        } catch (err) {
+            console.error('Error toggling stock status:', err);
+            alert('Failed to update product status. Please check your connection.');
         }
     };
 
@@ -128,21 +163,51 @@ const MyProducts = () => {
                                         <IndianRupee className="h-5 w-5" />
                                         {product.price}
                                     </div>
-                                    <div className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
-                                        Qty: {product.quantity} {product.unit}
+                                    <div className={`text-sm px-2 py-1 rounded-md font-medium ${product.quantity <= 0 ? 'bg-red-100 text-red-700 ring-1 ring-red-200' : 'bg-gray-100 text-gray-500'}`}>
+                                        {product.quantity <= 0 ? (
+                                            <span className="flex items-center">
+                                                <X className="h-3 w-3 mr-1" />
+                                                Out of Stock
+                                            </span>
+                                        ) : (
+                                            <>Qty: {product.quantity} {product.unit}</>
+                                        )}
                                     </div>
                                 </div>
                             </div>
-                            <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                                <Link to={`/edit-product/${product.id}`} className="text-gray-400 hover:text-blue-600 transition-colors">
-                                    <Edit className="h-5 w-5" />
-                                </Link>
+                            <div className="bg-gray-50 px-6 py-4 flex justify-end items-center space-x-4">
                                 <button
-                                    onClick={() => handleDelete(product.id)}
-                                    className="text-gray-400 hover:text-red-600 transition-colors"
+                                    onClick={() => toggleStockStatus(product)}
+                                    className={`transition-colors flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border ${product.quantity <= 0
+                                        ? 'text-green-600 border-green-200 bg-green-50 hover:bg-green-100 hover:border-green-300'
+                                        : 'text-gray-500 border-gray-200 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200'
+                                        }`}
+                                    title={product.quantity <= 0 ? "Mark as In Stock" : "Mark as Sold Out"}
                                 >
-                                    <Trash2 className="h-5 w-5" />
+                                    {product.quantity <= 0 ? (
+                                        <>
+                                            <Eye className="h-3.5 w-3.5" />
+                                            <span>Mark In Stock</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <EyeOff className="h-3.5 w-3.5" />
+                                            <span>Mark Sold Out</span>
+                                        </>
+                                    )}
                                 </button>
+                                <div className="flex items-center space-x-3 border-l border-gray-200 pl-4">
+                                    <Link to={`/edit-product/${product.id}`} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Product">
+                                        <Edit className="h-5 w-5" />
+                                    </Link>
+                                    <button
+                                        onClick={() => handleDelete(product.id)}
+                                        className="text-gray-400 hover:text-red-600 transition-colors"
+                                        title="Delete Product"
+                                    >
+                                        <Trash2 className="h-5 w-5" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}

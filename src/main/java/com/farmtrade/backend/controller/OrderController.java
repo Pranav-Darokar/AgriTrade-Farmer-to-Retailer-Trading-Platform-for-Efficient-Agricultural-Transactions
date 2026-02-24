@@ -46,4 +46,18 @@ public class OrderController {
     public List<Order> getAllOrders() {
         return orderService.getAllOrders();
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('RETAILER')")
+    public ResponseEntity<Order> cancelOrder(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(orderService.cancelOrder(id, auth.getName()));
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAuthority('FARMER')")
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(orderService.updateOrderStatus(id, status, auth.getName()));
+    }
 }

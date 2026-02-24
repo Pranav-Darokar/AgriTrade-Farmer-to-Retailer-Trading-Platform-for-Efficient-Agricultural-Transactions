@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { Menu, X, LogOut, User, ShoppingCart } from 'lucide-react';
+import { Menu, X, LogOut, User, ShoppingCart, ClipboardList } from 'lucide-react';
 import { useState } from 'react';
 
 import logo from '../assets/logo.png';
@@ -16,6 +16,11 @@ const Navbar = () => {
         logout();
         navigate('/login');
     };
+
+    // Null-safe role checks
+    const isRetailer = user?.roles?.some(r => r.includes('RETAILER'));
+    const isFarmer = user?.roles?.some(r => r.includes('FARMER'));
+    const isAdmin = user?.roles?.some(r => r.includes('ADMIN'));
 
     return (
         <nav className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
@@ -34,7 +39,8 @@ const Navbar = () => {
                         <Link to="/" className="text-gray-700 hover:text-green-600 font-medium transition-colors">Home</Link>
                         <Link to="/products" className="text-gray-700 hover:text-green-600 font-medium transition-colors">Marketplace</Link>
 
-                        {(!user || (user && user.roles.includes('RETAILER'))) && (
+                        {/* Cart icon — show for guests and retailers */}
+                        {(!user || isRetailer) && (
                             <Link to="/cart" className="relative group p-2 text-gray-700 hover:text-green-600 transition-colors">
                                 <ShoppingCart className="h-6 w-6" />
                                 {cart.length > 0 && (
@@ -45,14 +51,30 @@ const Navbar = () => {
                             </Link>
                         )}
 
+                        {/* Farmer: Incoming Orders link */}
+                        {isFarmer && (
+                            <Link to="/farmer-orders" className="flex items-center gap-1.5 text-gray-700 hover:text-orange-600 font-medium transition-colors">
+                                <ClipboardList className="h-5 w-5" />
+                                Orders
+                            </Link>
+                        )}
+
+                        {/* Retailer: My Orders link */}
+                        {isRetailer && (
+                            <Link to="/my-orders" className="flex items-center gap-1.5 text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                                <ClipboardList className="h-5 w-5" />
+                                My Orders
+                            </Link>
+                        )}
+
                         {user ? (
                             <div className="flex items-center space-x-4">
-                                {(!user.roles || !user.roles.includes('ADMIN')) && (
+                                {!isAdmin && (
                                     <Link to="/dashboard" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
                                         Dashboard
                                     </Link>
                                 )}
-                                {user.roles && user.roles.includes('ADMIN') && (
+                                {isAdmin && (
                                     <Link to="/admin" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
                                         Admin Dashboard
                                     </Link>
@@ -110,14 +132,24 @@ const Navbar = () => {
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                         <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50">Home</Link>
                         <Link to="/products" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50">Marketplace</Link>
-                        {(!user || (user && user.roles.includes('RETAILER'))) && (
+                        {(!user || isRetailer) && (
                             <Link to="/cart" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50">
                                 Cart ({cart.length})
                             </Link>
                         )}
+                        {isFarmer && (
+                            <Link to="/farmer-orders" className="block px-3 py-2 rounded-md text-base font-medium text-orange-600 hover:bg-orange-50">
+                                Incoming Orders
+                            </Link>
+                        )}
+                        {isRetailer && (
+                            <Link to="/my-orders" className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-blue-50">
+                                My Orders
+                            </Link>
+                        )}
                         {user ? (
                             <>
-                                {(!user.roles || !user.roles.includes('ADMIN')) && (
+                                {!isAdmin && (
                                     <Link to="/dashboard" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-green-600 hover:bg-gray-50">Dashboard</Link>
                                 )}
                                 <button

@@ -23,6 +23,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "retailer_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private User retailer;
 
     private LocalDateTime orderDate;

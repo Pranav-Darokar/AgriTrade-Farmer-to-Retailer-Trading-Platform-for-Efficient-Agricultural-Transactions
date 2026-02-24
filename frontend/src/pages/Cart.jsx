@@ -76,8 +76,20 @@ const Cart = () => {
                         {cart.map((item) => (
                             <li key={item.id} className="flex py-6 sm:py-10">
                                 <div className="flex-shrink-0">
-                                    <div className="h-24 w-24 rounded-md object-center object-cover bg-gray-100 flex items-center justify-center">
-                                        <ShoppingBag className="h-10 w-10 text-gray-400" />
+                                    <div className="h-24 w-24 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+                                        {item.imageUrl ? (
+                                            <img
+                                                src={item.imageUrl}
+                                                alt={item.name}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = "https://via.placeholder.com/96x96?text=No+Image";
+                                                }}
+                                            />
+                                        ) : (
+                                            <ShoppingBag className="h-10 w-10 text-gray-400" />
+                                        )}
                                     </div>
                                 </div>
 

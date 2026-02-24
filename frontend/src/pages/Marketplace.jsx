@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ShoppingCart, Search, Filter, Loader2, IndianRupee, Package, Info, Check } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ShoppingCart, Search, Filter, Loader2, IndianRupee, Package, Info, Check, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,6 +10,8 @@ const Marketplace = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('All');
+    const [sortBy, setSortBy] = useState('newest'); // 'price-low', 'price-high', 'category-az', 'newest'
     const [error, setError] = useState('');
     const { addToCart } = useCart();
     const { user } = useAuth();
@@ -46,10 +48,40 @@ const Marketplace = () => {
         }, 2000);
     };
 
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Generate categories dynamically from products
+    const categories = ['All', ...new Set(products
+        .map(p => p.category)
+        .filter(cat => cat && cat.trim() !== '')
+    )].sort();
+
+    const filteredProducts = products.filter(product => {
+        const name = product.name || '';
+        const desc = product.description || '';
+        const category = product.category || '';
+        const priceValue = Number(product.price) || 0;
+
+        const matchesSearch = name.toLowerCase().includes(searchTerm.trim().toLowerCase()) ||
+            desc.toLowerCase().includes(searchTerm.trim().toLowerCase());
+
+        const matchesCategory = categoryFilter === 'All' ||
+            category.trim().toLowerCase() === categoryFilter.trim().toLowerCase();
+
+        return matchesSearch && matchesCategory;
+    }).sort((a, b) => {
+        const priceA = Number(a.price) || 0;
+        const priceB = Number(b.price) || 0;
+
+        if (sortBy === 'price-low') return priceA - priceB;
+        if (sortBy === 'price-high') return priceB - priceA;
+        if (sortBy === 'category-az') return (a.category || '').localeCompare(b.category || '');
+        return Number(b.id) - Number(a.id);
+    });
+
+    const resetFilters = () => {
+        setSearchTerm('');
+        setCategoryFilter('All');
+        setSortBy('newest');
+    };
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -86,6 +118,66 @@ const Marketplace = () => {
                 </div>
             </div>
 
+            {/* Filter Section */}
+            {!loading && products.length > 0 && (
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 space-y-6">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-2">
+                            <Filter className="h-4 w-4 text-green-600" />
+                            <span className="text-sm font-bold text-gray-700 uppercase tracking-wider">Categories</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {categories.map(cat => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setCategoryFilter(cat)}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${categoryFilter === cat
+                                        ? 'bg-green-600 text-white border-green-600 shadow-md'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:border-green-500 hover:text-green-600'
+                                        }`}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-8 pt-6 border-t border-gray-100">
+
+                        {/* Sorting */}
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs text-gray-500 uppercase tracking-wider font-bold">Sort By</label>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="text-sm border-gray-200 rounded-lg focus:ring-green-500 focus:border-green-500 p-2 border bg-white min-w-[160px]"
+                            >
+                                <option value="newest">Newest First</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="category-az">Category: A-Z</option>
+                            </select>
+                        </div>
+
+                        {/* Reset Button */}
+                        <div className="flex items-end flex-grow">
+                            {(searchTerm || categoryFilter !== 'All' || sortBy !== 'newest') && (
+                                <button
+                                    onClick={resetFilters}
+                                    className="text-sm text-red-600 hover:text-red-700 font-bold flex items-center gap-1 transition-colors"
+                                >
+                                    <X className="h-4 w-4" />
+                                    Clear all filters
+                                </button>
+                            )}
+                            <div className="ml-auto text-sm text-gray-500">
+                                Showing <span className="font-bold text-gray-900">{filteredProducts.length}</span> products
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {loading ? (
                 <div className="flex justify-center items-center min-h-[40vh]">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
@@ -100,79 +192,110 @@ const Marketplace = () => {
                 </div>
             ) : (
                 <motion.div
+                    layout
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                     className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 >
-                    {filteredProducts.map((product) => (
-                        <motion.div
-                            key={product.id}
-                            variants={itemVariants}
-                            className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col"
-                        >
-                            <div className="h-48 bg-gray-200 relative">
-                                {product.imageUrl ? (
-                                    <img
-                                        src={product.imageUrl}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-green-50">
-                                        <Package className="h-16 w-16 text-green-200" />
-                                    </div>
-                                )}
-                                <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                                    fresh
-                                </div>
-                            </div>
-
-                            <div className="p-5 flex-grow flex flex-col">
-                                <div className="flex-grow">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-1">{product.name}</h3>
-                                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">{product.description}</p>
-
-                                    <div className="flex items-center text-xs text-gray-400 mb-4">
-                                        <Info className="h-3 w-3 mr-1" />
-                                        <span>Sold by: {product.farmer?.username || 'Farmer'}</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                                    <span className="text-2xl font-bold text-gray-900 flex items-center">
-                                        <IndianRupee className="h-5 w-5 mr-1" />
-                                        {product.price}
-                                    </span>
-                                    <span className="text-gray-500 text-sm">/ {product.unit || 'Unit'}</span>
-                                    {(!user || (user && user.roles.includes('RETAILER'))) && (
-                                        <div className="flex space-x-2">
-                                            <button
-                                                onClick={() => handleBuyNow(product)}
-                                                className="px-3 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm"
-                                            >
-                                                Buy Now
-                                            </button>
-                                            <button
-                                                onClick={() => handleAddToCart(product)}
-                                                className={`p-2 rounded-lg transition-colors shadow-sm hover:shadow-md ${addedItems[product.id]
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-green-600 text-white hover:bg-green-700'
-                                                    }`}
-                                                disabled={addedItems[product.id]}
-                                            >
-                                                {addedItems[product.id] ? <Check className="h-5 w-5" /> : <ShoppingCart className="h-5 w-5" />}
-                                            </button>
+                    <AnimatePresence mode='popLayout'>
+                        {filteredProducts.map((product) => (
+                            <motion.div
+                                layout
+                                key={product.id}
+                                variants={itemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="hidden"
+                                className={`group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col ${product.quantity <= 0 ? 'opacity-80' : ''}`}
+                            >
+                                <div className="h-48 bg-gray-200 relative">
+                                    {product.imageUrl ? (
+                                        <img
+                                            src={product.imageUrl}
+                                            alt={product.name}
+                                            className={`w-full h-full object-cover ${product.quantity <= 0 ? 'grayscale' : ''}`}
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = "https://via.placeholder.com/400x300?text=No+Image";
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-green-50">
+                                            <Package className={`h-16 w-16 text-green-200 ${product.quantity <= 0 ? 'grayscale' : ''}`} />
                                         </div>
                                     )}
+                                    <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                                        {product.quantity <= 0 ? (
+                                            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                                                Sold Out
+                                            </span>
+                                        ) : (
+                                            <span className="bg-green-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-lg">
+                                                Fresh
+                                            </span>
+                                        )}
+                                        {product.category && (
+                                            <span className="bg-white/90 backdrop-blur-sm text-green-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-md border border-green-100">
+                                                {product.category}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
+
+                                <div className="p-5 flex-grow flex flex-col">
+                                    <div className="flex-grow">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">{product.name}</h3>
+                                        <p className="text-sm text-gray-500 line-clamp-2 mb-3 h-10">{product.description}</p>
+
+                                        <div className="flex items-center text-[11px] font-medium text-gray-400 bg-gray-50 p-1.5 rounded-lg mb-4">
+                                            <Info className="h-3 w-3 mr-1 text-green-600" />
+                                            <span>Farmer: <span className="text-gray-700 uppercase">{product.farmer?.fullName || product.farmer?.username || 'Farmer'}</span></span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                                        <span className="text-2xl font-bold text-gray-900 flex items-center">
+                                            <IndianRupee className="h-5 w-5 mr-1" />
+                                            {product.price}
+                                        </span>
+                                        <span className="text-gray-500 text-sm">/ {product.unit || 'Unit'}</span>
+                                        {(!user || (user && user.roles.includes('RETAILER'))) && (
+                                            <div className="flex space-x-2">
+                                                {product.quantity <= 0 ? (
+                                                    <button
+                                                        disabled
+                                                        className="w-full px-4 py-2 bg-gray-200 text-gray-500 text-sm font-bold rounded-lg cursor-not-allowed uppercase tracking-wider border border-gray-300"
+                                                    >
+                                                        Sold Out
+                                                    </button>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleBuyNow(product)}
+                                                            className="px-3 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm"
+                                                        >
+                                                            Buy Now
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleAddToCart(product)}
+                                                            className={`p-2 rounded-lg transition-colors shadow-sm hover:shadow-md ${addedItems[product.id]
+                                                                ? 'bg-green-100 text-green-700'
+                                                                : 'bg-green-600 text-white hover:bg-green-700'
+                                                                }`}
+                                                            disabled={addedItems[product.id]}
+                                                        >
+                                                            {addedItems[product.id] ? <Check className="h-5 w-5" /> : <ShoppingCart className="h-5 w-5" />}
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </motion.div>
             )}
         </div>
