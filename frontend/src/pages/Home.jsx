@@ -82,39 +82,56 @@ const Step = ({ num, title, desc, delay }) => (
     </motion.div>
 );
 
+/* ─── Hero Background Slideshow (Ken Burns effect) ─── */
+const HERO_IMAGES = [
+    'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1920&q=80', // wheat field golden
+    'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1920&q=80', // paddy field aerial
+    'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1920&q=80', // fresh vegetables
+    'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1920&q=80', // harvest crop rows
+    'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1920&q=80', // farm sunrise
+];
+
+const HeroBackground = () => {
+    const [current, setCurrent] = useState(0);
+    useEffect(() => {
+        const t = setInterval(() => setCurrent(c => (c + 1) % HERO_IMAGES.length), 6000);
+        return () => clearInterval(t);
+    }, []);
+    return (
+        <div className="absolute inset-0">
+            {HERO_IMAGES.map((src, i) => (
+                <motion.div
+                    key={src}
+                    className="absolute inset-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: i === current ? 1 : 0 }}
+                    transition={{ duration: 1.5, ease: 'easeInOut' }}
+                >
+                    <motion.img
+                        src={src}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        initial={{ scale: 1.08 }}
+                        animate={{ scale: i === current ? 1.16 : 1.08 }}
+                        transition={{ duration: 7, ease: 'linear' }}
+                    />
+                </motion.div>
+            ))}
+        </div>
+    );
+};
+
 const Home = () => {
+
     const scrollRef = useRef(null);
 
     return (
         <div className="flex flex-col min-h-screen font-sans">
 
-            {/* ── HERO: Video Background ── */}
+            {/* ── HERO: Cinematic Animated Background ── */}
             <section className="relative min-h-screen flex items-center text-white overflow-hidden">
-                {/* Fallback image (shown while video loads) */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1920&q=80')" }}
-                />
-
-                {/* YouTube iframe video background */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <iframe
-                        src="https://www.youtube.com/embed/pMkew_jYT7I?autoplay=1&mute=1&loop=1&playlist=pMkew_jYT7I&controls=0&disablekb=1&fs=0&iv_load_policy=3&modestbranding=1&showinfo=0&rel=0&playsinline=1"
-                        title="Agriculture background"
-                        allow="autoplay; encrypted-media"
-                        className="absolute"
-                        style={{
-                            top: '50%', left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: '177.78vh',
-                            height: '100vh',
-                            minWidth: '100%',
-                            minHeight: '56.25vw',
-                            border: 'none',
-                            opacity: 0.85,
-                        }}
-                    />
-                </div>
+                {/* Ken Burns animated slide images */}
+                <HeroBackground />
 
                 {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-green-950/75 via-green-900/55 to-black/65" />
