@@ -30,13 +30,13 @@ const FeatureCard = ({ icon, title, description, delay }) => (
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay }}
         whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
-        className="bg-white p-8 rounded-2xl shadow-md border border-gray-100 flex flex-col items-start"
+        className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 flex flex-col items-start transition-colors duration-300"
     >
-        <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center mb-5">
+        <div className="w-14 h-14 bg-green-50 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-5">
             {icon}
         </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-500 leading-relaxed">{description}</p>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{title}</h3>
+        <p className="text-gray-500 dark:text-gray-300 leading-relaxed">{description}</p>
     </motion.div>
 );
 
@@ -47,17 +47,17 @@ const TestimonialCard = ({ name, role, quote, avatar, delay }) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay }}
-        className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 flex flex-col gap-4"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 flex flex-col gap-4 transition-colors duration-300"
     >
         <div className="flex text-yellow-400 gap-1">
             {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
         </div>
-        <p className="text-gray-600 italic leading-relaxed">"{quote}"</p>
-        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-gray-100">
+        <p className="text-gray-600 dark:text-gray-300 italic leading-relaxed">"{quote}"</p>
+        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
             <img src={avatar} alt={name} className="w-11 h-11 rounded-full object-cover ring-2 ring-green-200" />
             <div>
-                <p className="font-bold text-gray-900 text-sm">{name}</p>
-                <p className="text-green-600 text-xs">{role}</p>
+                <p className="font-bold text-gray-900 dark:text-white text-sm">{name}</p>
+                <p className="text-green-600 dark:text-green-400 text-xs">{role}</p>
             </div>
         </div>
     </motion.div>
@@ -76,8 +76,8 @@ const Step = ({ num, title, desc, delay }) => (
             {num}
         </div>
         <div>
-            <h4 className="font-bold text-gray-900 text-lg mb-1">{title}</h4>
-            <p className="text-gray-500">{desc}</p>
+            <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-1">{title}</h4>
+            <p className="text-gray-500 dark:text-gray-400">{desc}</p>
         </div>
     </motion.div>
 );
@@ -126,7 +126,7 @@ const Home = () => {
     const scrollRef = useRef(null);
 
     return (
-        <div className="flex flex-col min-h-screen font-sans">
+        <div className="flex flex-col min-h-screen font-sans bg-white dark:bg-gray-900 transition-colors duration-300">
 
             {/* ── HERO: Cinematic Animated Background ── */}
             <section className="relative min-h-screen flex items-center text-white overflow-hidden">
@@ -224,7 +224,7 @@ const Home = () => {
             </section>
 
             {/* ── FEATURES ── */}
-            <section className="py-24 bg-gray-50">
+            <section className="py-24 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -233,8 +233,8 @@ const Home = () => {
                         className="text-center mb-16"
                     >
                         <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">Why AgriTrade</span>
-                        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mt-3 mb-4">Built for Indian Agriculture</h2>
-                        <p className="text-xl text-gray-500 max-w-2xl mx-auto">We bridge the gap between cultivation and consumption with technology.</p>
+                        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mt-3 mb-4">Built for Indian Agriculture</h2>
+                        <p className="text-xl text-gray-500 dark:text-gray-300 max-w-2xl mx-auto">We bridge the gap between cultivation and consumption with technology.</p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -247,7 +247,7 @@ const Home = () => {
             </section>
 
             {/* ── AGRICULTURE IN INDIA SECTION ── */}
-            <section className="py-24 bg-white overflow-hidden">
+            <section className="py-24 bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         {/* Left images */}
@@ -288,10 +288,10 @@ const Home = () => {
                             transition={{ duration: 0.7 }}
                         >
                             <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">Our Mission</span>
-                            <h2 className="text-4xl font-extrabold text-gray-900 mt-3 mb-6 leading-tight">
+                            <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mt-3 mb-6 leading-tight">
                                 Empowering the Backbone of India
                             </h2>
-                            <p className="text-gray-500 text-lg leading-relaxed mb-8">
+                            <p className="text-gray-500 dark:text-gray-300 text-lg leading-relaxed mb-8">
                                 Agriculture employs over <strong>60% of India's workforce</strong>. Yet farmers receive only a fraction of the final price due to long supply chains. AgriTrade eliminates those layers — giving farmers fair prices and retailers quality produce at lower costs.
                             </p>
                             <div className="space-y-4">
@@ -302,10 +302,10 @@ const Home = () => {
                                     { icon: <Award className="h-5 w-5 text-green-600" />, text: "Verified and quality-checked produce listings" },
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-3">
-                                        <div className="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <div className="w-9 h-9 bg-green-50 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
                                             {item.icon}
                                         </div>
-                                        <span className="text-gray-700">{item.text}</span>
+                                        <span className="text-gray-700 dark:text-gray-200">{item.text}</span>
                                     </div>
                                 ))}
                             </div>
@@ -321,7 +321,7 @@ const Home = () => {
             </section>
 
             {/* ── HOW IT WORKS ── */}
-            <section className="py-24 bg-gradient-to-br from-green-50 to-emerald-50">
+            <section className="py-24 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -330,7 +330,7 @@ const Home = () => {
                         className="text-center mb-16"
                     >
                         <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">Simple Process</span>
-                        <h2 className="text-4xl font-extrabold text-gray-900 mt-3">How AgriTrade Works</h2>
+                        <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mt-3">How AgriTrade Works</h2>
                     </motion.div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -405,7 +405,7 @@ const Home = () => {
             </section>
 
             {/* ── PRODUCT CATEGORIES ── */}
-            <section className="py-24 bg-white">
+            <section className="py-24 bg-white dark:bg-gray-900 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -414,7 +414,7 @@ const Home = () => {
                         className="text-center mb-14"
                     >
                         <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">What We Trade</span>
-                        <h2 className="text-4xl font-extrabold text-gray-900 mt-3">Explore Categories</h2>
+                        <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mt-3">Explore Categories</h2>
                     </motion.div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
@@ -450,7 +450,7 @@ const Home = () => {
             </section>
 
             {/* ── TESTIMONIALS ── */}
-            <section className="py-24 bg-gray-50">
+            <section className="py-24 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -459,7 +459,7 @@ const Home = () => {
                         className="text-center mb-16"
                     >
                         <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">Testimonials</span>
-                        <h2 className="text-4xl font-extrabold text-gray-900 mt-3">Trusted by Farmers & Retailers</h2>
+                        <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mt-3">Trusted by Farmers & Retailers</h2>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
