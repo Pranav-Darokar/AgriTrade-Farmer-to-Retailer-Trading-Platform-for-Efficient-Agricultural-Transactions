@@ -86,6 +86,8 @@ const Navbar = () => {
                     <div className="hidden md:flex items-center gap-7">
                         <NavLink to="/">Home</NavLink>
                         <NavLink to="/products">Marketplace</NavLink>
+                        <NavLink to="/about">About</NavLink>
+                        <NavLink to="/contact">Contact</NavLink>
 
                         {isFarmer && (
                             <NavLink to="/farmer-orders">
@@ -281,6 +283,8 @@ const Navbar = () => {
                             {[
                                 { to: '/', label: 'Home' },
                                 { to: '/products', label: 'Marketplace' },
+                                { to: '/about', label: 'About' },
+                                { to: '/contact', label: 'Contact Us' },
                                 ...(isFarmer ? [{ to: '/farmer-orders', label: 'Incoming Orders' }] : []),
                                 ...(isRetailer ? [{ to: '/my-orders', label: 'My Orders' }] : []),
                                 ...(!isAdmin && user ? [{ to: '/dashboard', label: 'Dashboard' }] : []),

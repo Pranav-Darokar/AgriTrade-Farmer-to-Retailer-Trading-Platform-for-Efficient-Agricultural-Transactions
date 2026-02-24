@@ -19,6 +19,8 @@ import FarmerOrders from './pages/FarmerOrders';
 import Profile from './pages/Profile';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
+import About from './pages/About';
+import ContactUs from './pages/ContactUs';
 
 // Protected Route — requires authentication only
 const ProtectedRoute = ({ children }) => {
@@ -45,6 +47,8 @@ function App() {
                 <Routes>
                   {/* Public */}
                   <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<ContactUs />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
