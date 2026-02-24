@@ -346,15 +346,59 @@ const Home = () => {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6 }}
-                            className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video"
+                            className="relative rounded-3xl overflow-hidden shadow-2xl"
                         >
-                            <iframe
-                                src="https://www.youtube.com/embed/pMkew_jYT7I?autoplay=1&mute=1&loop=1&playlist=pMkew_jYT7I&controls=0&showinfo=0&rel=0"
-                                title="Indian Agriculture"
-                                className="w-full h-full"
-                                allow="autoplay; encrypted-media"
-                                allowFullScreen
-                            />
+                            {/* Background image */}
+                            <div className="relative h-full min-h-[420px]">
+                                <img
+                                    src="https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=900&q=80"
+                                    alt="Farm to retail"
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-br from-green-900/85 to-green-700/70" />
+
+                                {/* Content overlay */}
+                                <div className="relative p-10 h-full flex flex-col justify-between text-white min-h-[420px]">
+                                    <div>
+                                        <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
+                                            🌾 AgriTrade Platform
+                                        </span>
+                                        <h3 className="text-3xl font-extrabold mt-5 mb-3 leading-tight">
+                                            From Soil to Shelf — in 48 Hours
+                                        </h3>
+                                        <p className="text-green-100 text-base leading-relaxed max-w-sm">
+                                            Our streamlined platform connects farmers directly to retailers, cutting waste, middlemen, and delivery time.
+                                        </p>
+                                    </div>
+
+                                    {/* Mini stats */}
+                                    <div className="grid grid-cols-3 gap-4 mt-8">
+                                        {[
+                                            { val: '48h', label: 'Avg Delivery' },
+                                            { val: '40%', label: 'More Earnings' },
+                                            { val: '0', label: 'Middlemen' },
+                                        ].map(s => (
+                                            <div key={s.label} className="bg-white/15 backdrop-blur-sm rounded-xl p-4 text-center">
+                                                <div className="text-2xl font-extrabold">{s.val}</div>
+                                                <div className="text-green-200 text-xs mt-1">{s.label}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* CTA row */}
+                                    <div className="flex items-center gap-3 mt-6">
+                                        <Link
+                                            to="/signup"
+                                            className="inline-flex items-center px-6 py-3 bg-white text-green-800 font-bold rounded-full text-sm hover:bg-green-50 transition-colors shadow-lg"
+                                        >
+                                            Start Trading <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Link>
+                                        <Link to="/products" className="text-green-200 hover:text-white text-sm underline underline-offset-2 transition-colors">
+                                            Browse Marketplace
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
                         </motion.div>
                     </div>
                 </div>
