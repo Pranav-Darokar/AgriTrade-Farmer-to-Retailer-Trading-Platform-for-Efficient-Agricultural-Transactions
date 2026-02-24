@@ -90,18 +90,34 @@ const Home = () => {
 
             {/* ── HERO: Video Background ── */}
             <section className="relative min-h-screen flex items-center text-white overflow-hidden">
-                {/* Video */}
-                <video
-                    autoPlay muted loop playsInline
-                    className="absolute inset-0 w-full h-full object-cover"
-                    poster="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1920&q=80"
-                >
-                    <source src="https://cdn.coverr.co/videos/coverr-a-farmer-in-the-field-7443/1080p.mp4" type="video/mp4" />
-                    <source src="https://cdn.coverr.co/videos/coverr-an-aerial-view-of-a-farm-field-5387/1080p.mp4" type="video/mp4" />
-                </video>
+                {/* Fallback image (shown while video loads) */}
+                <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1920&q=80')" }}
+                />
+
+                {/* YouTube iframe video background */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <iframe
+                        src="https://www.youtube.com/embed/pMkew_jYT7I?autoplay=1&mute=1&loop=1&playlist=pMkew_jYT7I&controls=0&disablekb=1&fs=0&iv_load_policy=3&modestbranding=1&showinfo=0&rel=0&playsinline=1"
+                        title="Agriculture background"
+                        allow="autoplay; encrypted-media"
+                        className="absolute"
+                        style={{
+                            top: '50%', left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: '177.78vh',
+                            height: '100vh',
+                            minWidth: '100%',
+                            minHeight: '56.25vw',
+                            border: 'none',
+                            opacity: 0.85,
+                        }}
+                    />
+                </div>
 
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-green-950/80 via-green-900/60 to-black/70" />
+                <div className="absolute inset-0 bg-gradient-to-br from-green-950/75 via-green-900/55 to-black/65" />
 
                 {/* Badge */}
                 <motion.div
