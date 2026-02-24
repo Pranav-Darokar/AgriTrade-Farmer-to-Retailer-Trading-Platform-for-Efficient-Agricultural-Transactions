@@ -129,7 +129,7 @@ const Home = () => {
         <div className="flex flex-col min-h-screen font-sans">
 
             {/* ── HERO: Cinematic Animated Background ── */}
-            <section className="relative min-h-[83vh] flex items-center text-white overflow-hidden">
+            <section className="relative min-h-screen flex items-center text-white overflow-hidden">
                 {/* Ken Burns animated slide images */}
                 <HeroBackground />
 
@@ -148,7 +148,7 @@ const Home = () => {
                     </span>
                 </motion.div>
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col items-center text-center">
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 flex flex-col items-center text-center">
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
