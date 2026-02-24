@@ -129,7 +129,7 @@ const Home = () => {
         <div className="flex flex-col min-h-screen font-sans">
 
             {/* ── HERO: Cinematic Animated Background ── */}
-            <section className="relative min-h-[72vh] flex items-center text-white overflow-hidden">
+            <section className="relative min-h-[83vh] flex items-center text-white overflow-hidden">
                 {/* Ken Burns animated slide images */}
                 <HeroBackground />
 
