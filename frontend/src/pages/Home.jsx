@@ -143,7 +143,7 @@ const Home = () => {
                     transition={{ delay: 0.2 }}
                     className="absolute top-24 left-1/2 -translate-x-1/2"
                 >
-                    <span className="bg-green-500/20 border border-green-400/40 text-green-300 text-xs font-semibold px-4 py-1.5 rounded-full backdrop-blur-sm tracking-widest uppercase">
+                    <span className="bg-green-500/20 border border-green-400/40 text-green-300 text-[11px] sm:text-xs font-semibold px-3 sm:px-4 py-1.5 rounded-full backdrop-blur-sm tracking-wide sm:tracking-widest uppercase whitespace-nowrap">
                         🌾 India's Agri Trading Platform
                     </span>
                 </motion.div>
