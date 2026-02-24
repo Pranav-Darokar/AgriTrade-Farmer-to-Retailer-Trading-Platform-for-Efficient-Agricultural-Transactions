@@ -1,133 +1,454 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Leaf, ShieldCheck, Truck, Users } from 'lucide-react';
-import { motion } from 'framer-motion';
-import heroImage from '../assets/hero.jpg';
+import { ArrowRight, Leaf, ShieldCheck, Truck, Users, Star, ChevronDown, Sprout, BarChart2, Clock, Award } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+
+/* ─── Animated Counter ─── */
+const Counter = ({ target, suffix = '' }) => {
+    const [count, setCount] = useState(0);
+    const ref = useRef(null);
+    const inView = useInView(ref, { once: true });
+    useEffect(() => {
+        if (!inView) return;
+        let start = 0;
+        const step = Math.ceil(target / 60);
+        const timer = setInterval(() => {
+            start += step;
+            if (start >= target) { setCount(target); clearInterval(timer); }
+            else setCount(start);
+        }, 20);
+        return () => clearInterval(timer);
+    }, [inView, target]);
+    return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+};
+
+/* ─── Feature Card ─── */
+const FeatureCard = ({ icon, title, description, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay }}
+        whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.12)' }}
+        className="bg-white p-8 rounded-2xl shadow-md border border-gray-100 flex flex-col items-start"
+    >
+        <div className="w-14 h-14 bg-green-50 rounded-xl flex items-center justify-center mb-5">
+            {icon}
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
+        <p className="text-gray-500 leading-relaxed">{description}</p>
+    </motion.div>
+);
+
+/* ─── Testimonial Card ─── */
+const TestimonialCard = ({ name, role, quote, avatar, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay }}
+        className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 flex flex-col gap-4"
+    >
+        <div className="flex text-yellow-400 gap-1">
+            {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
+        </div>
+        <p className="text-gray-600 italic leading-relaxed">"{quote}"</p>
+        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-gray-100">
+            <img src={avatar} alt={name} className="w-11 h-11 rounded-full object-cover ring-2 ring-green-200" />
+            <div>
+                <p className="font-bold text-gray-900 text-sm">{name}</p>
+                <p className="text-green-600 text-xs">{role}</p>
+            </div>
+        </div>
+    </motion.div>
+);
+
+/* ─── How It Works Step ─── */
+const Step = ({ num, title, desc, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay }}
+        className="flex gap-5 items-start"
+    >
+        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-green-600 text-white font-bold text-lg flex items-center justify-center shadow-lg">
+            {num}
+        </div>
+        <div>
+            <h4 className="font-bold text-gray-900 text-lg mb-1">{title}</h4>
+            <p className="text-gray-500">{desc}</p>
+        </div>
+    </motion.div>
+);
 
 const Home = () => {
+    const scrollRef = useRef(null);
+
     return (
-        <div className="flex flex-col min-h-screen">
-            {/* Hero Section */}
-            <section className="relative bg-green-900 text-white overflow-hidden">
-                <div className="absolute inset-0">
-                    <img
-                        src={heroImage}
-                        alt="Farm field"
-                        className="w-full h-full object-cover opacity-30"
-                    />
-                </div>
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 flex flex-col items-center text-center">
+        <div className="flex flex-col min-h-screen font-sans">
+
+            {/* ── HERO: Video Background ── */}
+            <section className="relative min-h-screen flex items-center text-white overflow-hidden">
+                {/* Video */}
+                <video
+                    autoPlay muted loop playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                    poster="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1920&q=80"
+                >
+                    <source src="https://cdn.coverr.co/videos/coverr-a-farmer-in-the-field-7443/1080p.mp4" type="video/mp4" />
+                    <source src="https://cdn.coverr.co/videos/coverr-an-aerial-view-of-a-farm-field-5387/1080p.mp4" type="video/mp4" />
+                </video>
+
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-950/80 via-green-900/60 to-black/70" />
+
+                {/* Badge */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="absolute top-24 left-1/2 -translate-x-1/2"
+                >
+                    <span className="bg-green-500/20 border border-green-400/40 text-green-300 text-xs font-semibold px-4 py-1.5 rounded-full backdrop-blur-sm tracking-widest uppercase">
+                        🌾 India's Agri Trading Platform
+                    </span>
+                </motion.div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 flex flex-col items-center text-center">
                     <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6"
+                        transition={{ duration: 0.7, delay: 0.3 }}
+                        className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight"
                     >
-                        Direct from <span className="text-green-400">Farm</span> to <span className="text-yellow-400">Retail</span>
+                        Direct from{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">Farm</span>
+                        {' '}to{' '}
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-400">Retail</span>
                     </motion.h1>
+
                     <motion.p
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-xl md:text-2xl text-gray-200 max-w-3xl mb-10"
+                        transition={{ duration: 0.7, delay: 0.5 }}
+                        className="text-lg md:text-2xl text-gray-200 max-w-3xl mb-12 leading-relaxed"
                     >
-                        Empowering farmers and retailers with a transparent, efficient, and fair trading platform. No middlemen, just fresh produce and better profits.
+                        Empowering Indian farmers and retailers with a transparent, efficient trading platform.
+                        No middlemen — just fresh produce and better profits.
                     </motion.p>
+
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
+                        transition={{ duration: 0.7, delay: 0.7 }}
                         className="flex flex-col sm:flex-row gap-4"
                     >
                         <Link
                             to="/signup"
-                            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-green-900 bg-white hover:bg-green-50 md:text-lg md:px-10 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                            className="inline-flex items-center justify-center px-10 py-4 text-base font-semibold rounded-full text-green-900 bg-white hover:bg-green-50 shadow-2xl hover:shadow-green-200/50 transition-all duration-300 transform hover:-translate-y-1"
                         >
-                            Get Started
+                            Get Started Free
                             <ArrowRight className="ml-2 h-5 w-5" />
                         </Link>
                         <Link
                             to="/products"
-                            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-green-600 hover:bg-green-700 md:text-lg md:px-10 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                            className="inline-flex items-center justify-center px-10 py-4 text-base font-semibold rounded-full text-white border-2 border-white/30 hover:bg-white/10 backdrop-blur-sm transition-all duration-300 transform hover:-translate-y-1"
                         >
                             Browse Marketplace
                         </Link>
                     </motion.div>
+
+                    {/* Scroll Indicator */}
+                    <motion.div
+                        animate={{ y: [0, 8, 0] }}
+                        transition={{ repeat: Infinity, duration: 1.5 }}
+                        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50 cursor-pointer"
+                        onClick={() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    >
+                        <ChevronDown className="h-7 w-7" />
+                    </motion.div>
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section className="py-20 bg-gray-50">
+            {/* ── STATS BAR ── */}
+            <section ref={scrollRef} className="bg-gradient-to-r from-green-700 to-emerald-600 py-12">
+                <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
+                    {[
+                        { target: 500, suffix: '+', label: 'Farmers Registered' },
+                        { target: 1200, suffix: '+', label: 'Retailers Connected' },
+                        { target: 10000, suffix: '+', label: 'Orders Completed' },
+                        { target: 22, suffix: '+', label: 'Product Categories' },
+                    ].map((s, i) => (
+                        <div key={i}>
+                            <div className="text-4xl md:text-5xl font-extrabold mb-1">
+                                <Counter target={s.target} suffix={s.suffix} />
+                            </div>
+                            <div className="text-green-100 text-sm font-medium">{s.label}</div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* ── FEATURES ── */}
+            <section className="py-24 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                            Why Choose AgriTrade?
-                        </h2>
-                        <p className="mt-4 text-xl text-gray-600">
-                            We bridge the gap between cultivation and consumption.
-                        </p>
-                    </div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">Why AgriTrade</span>
+                        <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mt-3 mb-4">Built for Indian Agriculture</h2>
+                        <p className="text-xl text-gray-500 max-w-2xl mx-auto">We bridge the gap between cultivation and consumption with technology.</p>
+                    </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <FeatureCard
-                            icon={<Leaf className="h-8 w-8 text-green-600" />}
-                            title="Fresh Produce"
-                            description="Source directly from farmers ensuring maximum freshness and quality."
+                        <FeatureCard delay={0} icon={<Leaf className="h-7 w-7 text-green-600" />} title="Fresh Produce" description="Source farm-fresh produce directly — no cold storage delays, maximum nutrition retained." />
+                        <FeatureCard delay={0.1} icon={<ShieldCheck className="h-7 w-7 text-green-600" />} title="Secure Payments" description="Every transaction is transparent and protected. Farmers get paid fairly and on time." />
+                        <FeatureCard delay={0.2} icon={<Truck className="h-7 w-7 text-green-600" />} title="Efficient Logistics" description="Streamlined delivery network reduces wastage, costs, and time from farm to shelf." />
+                        <FeatureCard delay={0.3} icon={<Users className="h-7 w-7 text-green-600" />} title="Direct Connection" description="Build lasting relationships between farmers and retailers without intermediaries." />
+                    </div>
+                </div>
+            </section>
+
+            {/* ── AGRICULTURE IN INDIA SECTION ── */}
+            <section className="py-24 bg-white overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        {/* Left images */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -40 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.7 }}
+                            className="grid grid-cols-2 gap-4"
+                        >
+                            <img
+                                src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80"
+                                alt="Indian farmer in paddy field"
+                                className="rounded-2xl object-cover w-full h-52 shadow-lg"
+                            />
+                            <img
+                                src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&q=80"
+                                alt="Fresh vegetables"
+                                className="rounded-2xl object-cover w-full h-52 shadow-lg mt-8"
+                            />
+                            <img
+                                src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=600&q=80"
+                                alt="Agricultural harvest"
+                                className="rounded-2xl object-cover w-full h-52 shadow-lg"
+                            />
+                            <img
+                                src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80"
+                                alt="Farm produce market"
+                                className="rounded-2xl object-cover w-full h-52 shadow-lg mt-8"
+                            />
+                        </motion.div>
+
+                        {/* Right text */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 40 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.7 }}
+                        >
+                            <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">Our Mission</span>
+                            <h2 className="text-4xl font-extrabold text-gray-900 mt-3 mb-6 leading-tight">
+                                Empowering the Backbone of India
+                            </h2>
+                            <p className="text-gray-500 text-lg leading-relaxed mb-8">
+                                Agriculture employs over <strong>60% of India's workforce</strong>. Yet farmers receive only a fraction of the final price due to long supply chains. AgriTrade eliminates those layers — giving farmers fair prices and retailers quality produce at lower costs.
+                            </p>
+                            <div className="space-y-4">
+                                {[
+                                    { icon: <Sprout className="h-5 w-5 text-green-600" />, text: "From wheat fields of Punjab to coconut groves of Kerala" },
+                                    { icon: <BarChart2 className="h-5 w-5 text-green-600" />, text: "Farmers earn up to 40% more per harvest" },
+                                    { icon: <Clock className="h-5 w-5 text-green-600" />, text: "Orders fulfilled within 24-48 hours of harvest" },
+                                    { icon: <Award className="h-5 w-5 text-green-600" />, text: "Verified and quality-checked produce listings" },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <div className="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            {item.icon}
+                                        </div>
+                                        <span className="text-gray-700">{item.text}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <Link
+                                to="/signup"
+                                className="inline-flex items-center mt-10 px-8 py-3.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-lg hover:shadow-green-300/50 transition-all duration-300 transform hover:-translate-y-1"
+                            >
+                                Join the Movement <ArrowRight className="ml-2 h-5 w-5" />
+                            </Link>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ── HOW IT WORKS ── */}
+            <section className="py-24 bg-gradient-to-br from-green-50 to-emerald-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">Simple Process</span>
+                        <h2 className="text-4xl font-extrabold text-gray-900 mt-3">How AgriTrade Works</h2>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <div className="space-y-10">
+                            <Step num="1" delay={0} title="Farmer Lists Produce" desc="Farmers register and list their fresh produce with quantity, price, and category." />
+                            <Step num="2" delay={0.1} title="Retailer Browses & Orders" desc="Retailers browse the marketplace, compare prices, and place bulk orders in seconds." />
+                            <Step num="3" delay={0.2} title="Secure Transaction" desc="Payment is processed securely. Both parties get real-time order status updates." />
+                            <Step num="4" delay={0.3} title="Fresh Delivery" desc="Produce is delivered fresh from farm to retail outlet, tracked every step of the way." />
+                        </div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6 }}
+                            className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video"
+                        >
+                            <iframe
+                                src="https://www.youtube.com/embed/pMkew_jYT7I?autoplay=1&mute=1&loop=1&playlist=pMkew_jYT7I&controls=0&showinfo=0&rel=0"
+                                title="Indian Agriculture"
+                                className="w-full h-full"
+                                allow="autoplay; encrypted-media"
+                                allowFullScreen
+                            />
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ── PRODUCT CATEGORIES ── */}
+            <section className="py-24 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-14"
+                    >
+                        <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">What We Trade</span>
+                        <h2 className="text-4xl font-extrabold text-gray-900 mt-3">Explore Categories</h2>
+                    </motion.div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+                        {[
+                            { name: 'Fresh Vegetables', emoji: '🥦', img: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80' },
+                            { name: 'Fruits', emoji: '🥭', img: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&q=80' },
+                            { name: 'Grains & Pulses', emoji: '🌾', img: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80' },
+                            { name: 'Dairy', emoji: '🥛', img: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&q=80' },
+                            { name: 'Essentials', emoji: '🍯', img: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&q=80' },
+                        ].map((cat, i) => (
+                            <motion.div
+                                key={cat.name}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.08 }}
+                                whileHover={{ y: -5 }}
+                            >
+                                <Link to="/products" className="block rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                                    <div className="relative h-36 overflow-hidden">
+                                        <img src={cat.img} alt={cat.name} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                        <div className="absolute bottom-3 left-3 text-white">
+                                            <span className="text-2xl">{cat.emoji}</span>
+                                            <p className="text-sm font-bold leading-tight mt-0.5">{cat.name}</p>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ── TESTIMONIALS ── */}
+            <section className="py-24 bg-gray-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">Testimonials</span>
+                        <h2 className="text-4xl font-extrabold text-gray-900 mt-3">Trusted by Farmers & Retailers</h2>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <TestimonialCard
+                            delay={0}
+                            name="Ramesh Kumar"
+                            role="Wheat Farmer, Punjab"
+                            quote="AgriTrade helped me cut out agents completely. I now earn ₹40 more per quintal and get paid within 48 hours. It has changed my family's life."
+                            avatar="https://randomuser.me/api/portraits/men/45.jpg"
                         />
-                        <FeatureCard
-                            icon={<ShieldCheck className="h-8 w-8 text-green-600" />}
-                            title="Secure Payments"
-                            description="Safe and transparent transaction process for both parties."
+                        <TestimonialCard
+                            delay={0.1}
+                            name="Priya Sharma"
+                            role="Vegetable Farmer, Maharashtra"
+                            quote="Earlier my tomatoes would rot before reaching the market. Now I list them on AgriTrade and they're sold within a day. Zero wastage!"
+                            avatar="https://randomuser.me/api/portraits/women/32.jpg"
                         />
-                        <FeatureCard
-                            icon={<Truck className="h-8 w-8 text-green-600" />}
-                            title="Efficient Logistics"
-                            description="Streamlined delivery options to reduce wastage and cost."
-                        />
-                        <FeatureCard
-                            icon={<Users className="h-8 w-8 text-green-600" />}
-                            title="Direct Connection"
-                            description="Build long-term relationships without intermediaries."
+                        <TestimonialCard
+                            delay={0.2}
+                            name="Anil Mehta"
+                            role="Retail Store Owner, Mumbai"
+                            quote="I source all my fresh produce through AgriTrade. Quality is consistently better than wholesale markets and prices are more predictable."
+                            avatar="https://randomuser.me/api/portraits/men/67.jpg"
                         />
                     </div>
                 </div>
             </section>
 
-            {/* Stats/Trust Section */}
-            <section className="py-16 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-green-600 rounded-3xl shadow-xl overflow-hidden">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-12 text-center text-white">
-                            <div>
-                                <div className="text-4xl font-bold mb-2">500+</div>
-                                <div className="text-green-100">Farmers Registered</div>
-                            </div>
-                            <div>
-                                <div className="text-4xl font-bold mb-2">1,200+</div>
-                                <div className="text-green-100">Retailers Connected</div>
-                            </div>
-                            <div>
-                                <div className="text-4xl font-bold mb-2">10k+</div>
-                                <div className="text-green-100">Orders Completed</div>
-                            </div>
-                        </div>
+            {/* ── CTA BANNER ── */}
+            <section className="relative py-28 overflow-hidden">
+                <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80')" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-green-900/90 to-green-800/75" />
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="relative max-w-4xl mx-auto text-center px-4"
+                >
+                    <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
+                        Ready to Transform Your Agricultural Business?
+                    </h2>
+                    <p className="text-green-100 text-xl mb-10 max-w-2xl mx-auto">
+                        Join thousands of farmers and retailers already benefiting from direct trade. Sign up free in under 2 minutes.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link
+                            to="/signup"
+                            className="inline-flex items-center justify-center px-10 py-4 bg-white text-green-800 font-bold rounded-full shadow-2xl hover:bg-green-50 transition-all duration-300 transform hover:-translate-y-1 text-lg"
+                        >
+                            Start Trading Today <ArrowRight className="ml-2 h-5 w-5" />
+                        </Link>
+                        <Link
+                            to="/products"
+                            className="inline-flex items-center justify-center px-10 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1 text-lg"
+                        >
+                            Explore Marketplace
+                        </Link>
                     </div>
-                </div>
+                </motion.div>
             </section>
+
         </div>
     );
 };
-
-const FeatureCard = ({ icon, title, description }) => (
-    <motion.div
-        whileHover={{ y: -5 }}
-        className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
-    >
-        <div className="w-14 h-14 bg-green-50 rounded-lg flex items-center justify-center mb-4">
-            {icon}
-        </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-600">{description}</p>
-    </motion.div>
-);
 
 export default Home;
