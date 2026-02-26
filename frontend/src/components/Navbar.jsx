@@ -162,12 +162,20 @@ const Navbar = () => {
                                 >
                                     <div className="h-7 w-7 rounded-full overflow-hidden ring-2 ring-green-400 ring-offset-1 dark:ring-offset-gray-900">
                                         {user.profilePhoto ? (
-                                            <img src={`${import.meta.env.VITE_API_BASE_URL}${user.profilePhoto}`} alt="Profile" className="h-full w-full object-cover" />
-                                        ) : (
-                                            <div className="h-full w-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
-                                                <User size={14} className="text-white" />
-                                            </div>
-                                        )}
+                                            <img
+                                                src={user.profilePhoto.startsWith('http') ? user.profilePhoto : `${import.meta.env.VITE_API_BASE_URL}${user.profilePhoto}`}
+                                                alt="Profile"
+                                                className="h-full w-full object-cover"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling?.classList.remove('hidden');
+                                                }}
+                                            />
+                                        ) : null}
+                                        <div className={`h-full w-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center ${user.profilePhoto ? 'hidden' : ''}`}>
+                                            <User size={14} className="text-white" />
+                                        </div>
                                     </div>
                                     <span className="text-xs font-semibold text-gray-700 dark:text-gray-200 max-w-[80px] truncate">
                                         {user.name?.split(' ')[0] || 'Me'}

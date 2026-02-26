@@ -93,13 +93,22 @@ const Profile = () => {
                         <div className="h-32 w-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center overflow-hidden relative">
                             {previewUrl || user.profilePhoto ? (
                                 <img
-                                    src={previewUrl || `${import.meta.env.VITE_API_BASE_URL}${user.profilePhoto}`}
+                                    src={
+                                        previewUrl ||
+                                        (user.profilePhoto?.startsWith('http')
+                                            ? user.profilePhoto
+                                            : `${import.meta.env.VITE_API_BASE_URL}${user.profilePhoto}`)
+                                    }
                                     alt="Profile"
                                     className="h-full w-full object-cover"
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.style.display = 'none';
+                                        e.target.parentNode.querySelector('.fallback-icon')?.classList.remove('hidden');
+                                    }}
                                 />
-                            ) : (
-                                <User className="h-16 w-16 text-gray-400" />
-                            )}
+                            ) : null}
+                            <User className={`h-16 w-16 text-gray-400 fallback-icon ${previewUrl || user.profilePhoto ? 'hidden' : ''}`} />
 
                             {isEditing && (
                                 <label className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
