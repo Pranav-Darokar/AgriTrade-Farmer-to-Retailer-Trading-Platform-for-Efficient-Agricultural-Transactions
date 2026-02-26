@@ -115,7 +115,7 @@ public class AuthController {
             user.setAadhaarNumber(signUpRequest.getAadhaarNumber());
         }
 
-        user.setStatus(UserStatus.PENDING); // Default status for new users
+        user.setStatus(UserStatus.APPROVED); // Allow login immediately after signup
 
         userRepository.save(user);
 

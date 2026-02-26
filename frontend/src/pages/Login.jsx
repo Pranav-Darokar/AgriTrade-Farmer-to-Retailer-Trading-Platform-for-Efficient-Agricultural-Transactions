@@ -28,7 +28,8 @@ const Login = () => {
                 navigate(from, { replace: true });
             }
         } catch (err) {
-            setError('Invalid email or password');
+            const backendMsg = err.response?.data?.message;
+            setError(backendMsg || 'Invalid email or password');
         } finally {
             setLoading(false);
         }
