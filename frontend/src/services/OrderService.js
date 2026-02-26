@@ -35,12 +35,18 @@ const updateOrderStatus = async (orderId, status) => {
     return response.data;
 };
 
+const getDashboardStats = async () => {
+    const response = await axios.get(`${API_URL}/dashboard-stats`, { headers: getAuthHeader() });
+    return response.data;
+};
+
 const OrderService = {
     placeOrder,
     getMyOrders,
     getFarmerOrders,
     cancelOrder,
-    updateOrderStatus
+    updateOrderStatus,
+    getDashboardStats
 };
 
 export default OrderService;
