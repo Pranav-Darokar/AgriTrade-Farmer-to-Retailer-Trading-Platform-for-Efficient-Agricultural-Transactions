@@ -2,13 +2,6 @@ import { motion } from 'framer-motion';
 import { Leaf, ShieldCheck, Users, BarChart2, Award, Sprout } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const team = [
-    { name: 'Pranav Darokar', role: 'Founder & CEO', bio: "Visionary behind AgriTrade — connecting India's farmers directly to retailers.", avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=PD&backgroundColor=16a34a&fontColor=ffffff' },
-    { name: 'Aisha Verma', role: 'Head of Operations', bio: 'Ensures seamless logistics partnerships and smooth supply chain execution.', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=AV&backgroundColor=059669&fontColor=ffffff' },
-    { name: 'Rohit Patil', role: 'Lead Engineer', bio: 'Architects the platform technology powering tens of thousands of daily transactions.', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=RP&backgroundColor=0d9488&fontColor=ffffff' },
-    { name: 'Sneha Joshi', role: 'Community Manager', bio: 'Onboards and supports farmer and retailer communities across India.', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=SJ&backgroundColor=15803d&fontColor=ffffff' },
-];
-
 const values = [
     { icon: <Leaf className="h-6 w-6 text-green-500" />, title: 'Sustainability', desc: 'Reducing food waste and carbon footprint by shortening supply chains from farm to shelf.' },
     { icon: <ShieldCheck className="h-6 w-6 text-green-500" />, title: 'Transparency', desc: 'Every price, every transaction is open and fair. No hidden commissions or middlemen.' },
@@ -124,39 +117,6 @@ export default function About() {
                 </div>
             </section>
 
-            {/* ── Team ── */}
-            <section className="py-24 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-16"
-                    >
-                        <span className="text-green-600 font-semibold tracking-widest uppercase text-sm">People</span>
-                        <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mt-3">Meet the Team</h2>
-                        <p className="text-gray-500 dark:text-gray-400 mt-3 max-w-xl mx-auto">Passionate individuals dedicated to transforming Indian agriculture through technology.</p>
-                    </motion.div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {team.map((member, i) => (
-                            <motion.div
-                                key={member.name}
-                                initial={{ opacity: 0, y: 24 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1, duration: 0.5 }}
-                                whileHover={{ y: -6 }}
-                                className="bg-white dark:bg-gray-900 rounded-2xl p-6 text-center shadow-md border border-gray-100 dark:border-gray-700 transition-colors duration-300"
-                            >
-                                <img src={member.avatar} alt={member.name} className="w-16 h-16 rounded-full mx-auto mb-4 ring-4 ring-green-100 dark:ring-green-900" />
-                                <h3 className="font-bold text-gray-900 dark:text-white">{member.name}</h3>
-                                <p className="text-green-600 dark:text-green-400 text-xs font-semibold mb-2">{member.role}</p>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{member.bio}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
             {/* ── CTA ── */}
             <section className="py-20 bg-gradient-to-r from-green-600 to-emerald-500">
