@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
+        const storedUser = sessionStorage.getItem("user");
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
             });
 
             if (response.data.token) {
-                localStorage.setItem("user", JSON.stringify(response.data));
+                sessionStorage.setItem("user", JSON.stringify(response.data));
                 setUser(response.data);
             }
             return response.data;
@@ -45,11 +45,11 @@ export const AuthProvider = ({ children }) => {
 
     const updateUser = (userData) => {
         setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
+        sessionStorage.setItem("user", JSON.stringify(userData));
     };
 
     const logout = () => {
-        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
         setUser(null);
     };
 

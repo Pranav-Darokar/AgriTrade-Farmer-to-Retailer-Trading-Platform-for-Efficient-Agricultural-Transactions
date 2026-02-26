@@ -86,11 +86,11 @@ const Profile = () => {
     if (!user) return null;
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 transition-colors">
+            <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden transition-colors">
                 <div className="bg-green-600 h-32 w-full relative">
                     <div className="absolute -bottom-16 left-8 group">
-                        <div className="h-32 w-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center overflow-hidden relative">
+                        <div className="h-32 w-32 rounded-full border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden relative transition-colors shadow-lg">
                             {previewUrl || user.profilePhoto ? (
                                 <img
                                     src={
@@ -108,7 +108,7 @@ const Profile = () => {
                                     }}
                                 />
                             ) : null}
-                            <User className={`h-16 w-16 text-gray-400 fallback-icon ${previewUrl || user.profilePhoto ? 'hidden' : ''}`} />
+                            <User className={`h-16 w-16 text-gray-400 dark:text-gray-500 fallback-icon ${previewUrl || user.profilePhoto ? 'hidden' : ''}`} />
 
                             {isEditing && (
                                 <label className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
@@ -121,18 +121,18 @@ const Profile = () => {
                 </div>
 
                 <div className="pt-20 pb-8 px-8">
-                    <div className="flex justify-between items-start mb-6">
+                    <div className="flex flex-wrap justify-between items-start mb-6 gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">{isEditing ? 'Edit Profile' : (user.fullName || user.email)}</h1>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors">{isEditing ? 'Edit Profile' : (user.fullName || user.email)}</h1>
                             {!isEditing && user.fullName && (
-                                <p className="text-sm text-gray-500">{user.email}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{user.email}</p>
                             )}
                         </div>
 
                         {!isEditing ? (
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                className="flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                             >
                                 <Edit2 className="h-4 w-4 mr-2" />
                                 Edit Profile
@@ -145,7 +145,7 @@ const Profile = () => {
                                         setSelectedFile(null);
                                         setPreviewUrl(null);
                                     }}
-                                    className="flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                    className="flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                                 >
                                     <X className="h-4 w-4 mr-2" />
                                     Cancel
@@ -153,7 +153,7 @@ const Profile = () => {
                                 <button
                                     onClick={handleSubmit}
                                     disabled={loading}
-                                    className="flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
+                                    className="flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors"
                                 >
                                     {loading ? 'Saving...' : (
                                         <>
@@ -167,7 +167,7 @@ const Profile = () => {
                     </div>
 
                     {message.text && (
-                        <div className={`mb-4 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                        <div className={`mb-6 p-4 rounded-md border transition-colors ${message.type === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-100 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-800'}`}>
                             {message.text}
                         </div>
                     )}
@@ -175,42 +175,42 @@ const Profile = () => {
                     {isEditing ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
                                 <input
                                     type="text"
                                     name="fullName"
                                     value={formData.fullName}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Mobile Number</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Mobile Number</label>
                                 <input
                                     type="text"
                                     name="mobileNumber"
                                     value={formData.mobileNumber}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                                 />
                             </div>
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700">Address</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
                                 <textarea
                                     name="address"
                                     value={formData.address}
                                     onChange={handleChange}
                                     rows={3}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Gender</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
                                 <select
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                                 >
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
@@ -219,79 +219,77 @@ const Profile = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Date of Birth</label>
                                 <input
                                     type="date"
                                     name="dateOfBirth"
                                     value={formData.dateOfBirth}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2"
+                                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm border p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                                 />
                             </div>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Display Mode - Same as before but cleaner */}
                             <div className="space-y-6">
-                                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Personal Information</h3>
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white border-b dark:border-gray-700 pb-2 transition-colors">Personal Information</h3>
                                 <dl className="space-y-4">
                                     <div className="flex justify-between">
-                                        <dt className="text-sm text-gray-500">Gender</dt>
-                                        <dd className="text-sm font-medium text-gray-900">{user.gender || 'Not specified'}</dd>
+                                        <dt className="text-sm text-gray-500 dark:text-gray-400">Gender</dt>
+                                        <dd className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.gender || 'Not specified'}</dd>
                                     </div>
                                     <div className="flex justify-between">
-                                        <dt className="text-sm text-gray-500">Date of Birth</dt>
-                                        <dd className="text-sm font-medium text-gray-900">{user.dateOfBirth || 'Not specified'}</dd>
+                                        <dt className="text-sm text-gray-500 dark:text-gray-400">Date of Birth</dt>
+                                        <dd className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.dateOfBirth || 'Not specified'}</dd>
                                     </div>
                                     <div className="flex justify-between">
-                                        <dt className="text-sm text-gray-500">Aadhaar Number</dt>
-                                        <dd className="text-sm font-medium text-gray-900">{user.aadhaarNumber || 'N/A'}</dd>
+                                        <dt className="text-sm text-gray-500 dark:text-gray-400">Aadhaar Number</dt>
+                                        <dd className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.aadhaarNumber || 'N/A'}</dd>
                                     </div>
                                     <div className="flex justify-between">
-                                        <dt className="text-sm text-gray-500">Licence No.</dt>
-                                        <dd className="text-sm font-medium text-gray-900">{user.licenceNumber || 'N/A'}</dd>
+                                        <dt className="text-sm text-gray-500 dark:text-gray-400">Licence No.</dt>
+                                        <dd className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.licenceNumber || 'N/A'}</dd>
                                     </div>
                                 </dl>
 
-                                <h3 className="text-lg font-medium text-gray-900 border-b pb-2 pt-4">Contact Details</h3>
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white border-b dark:border-gray-700 pb-2 pt-4 transition-colors">Contact Details</h3>
                                 <dl className="space-y-4">
                                     <div className="flex items-center">
-                                        <Phone className="h-5 w-5 mr-3 text-gray-400" />
+                                        <Phone className="h-5 w-5 mr-3 text-gray-400 dark:text-gray-500" />
                                         <div>
-                                            <dt className="text-xs text-gray-400 uppercase">Mobile</dt>
-                                            <dd className="text-sm font-medium text-gray-900">{user.mobileNumber || user.contactInfo || 'N/A'}</dd>
+                                            <dt className="text-xs text-gray-400 dark:text-gray-500 uppercase">Mobile</dt>
+                                            <dd className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.mobileNumber || user.contactInfo || 'N/A'}</dd>
                                         </div>
                                     </div>
                                     <div className="flex items-center">
-                                        <Mail className="h-5 w-5 mr-3 text-gray-400" />
+                                        <Mail className="h-5 w-5 mr-3 text-gray-400 dark:text-gray-500" />
                                         <div>
-                                            <dt className="text-xs text-gray-400 uppercase">Email</dt>
-                                            <dd className="text-sm font-medium text-gray-900">{user.email}</dd>
+                                            <dt className="text-xs text-gray-400 dark:text-gray-500 uppercase">Email</dt>
+                                            <dd className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.email}</dd>
                                         </div>
                                     </div>
                                     <div className="flex items-start">
-                                        {/* Placeholder for address icon */}
                                         <div className="mt-1 mr-3 h-5 w-5"></div>
                                         <div>
-                                            <dt className="text-xs text-gray-400 uppercase">Address</dt>
-                                            <dd className="text-sm font-medium text-gray-900">{user.address || 'Not specified'}</dd>
+                                            <dt className="text-xs text-gray-400 dark:text-gray-500 uppercase">Address</dt>
+                                            <dd className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.address || 'Not specified'}</dd>
                                         </div>
                                     </div>
                                 </dl>
                             </div>
 
-                            <div className="bg-gray-50 p-6 rounded-lg h-fit">
-                                <h3 className="text-lg font-medium text-gray-900 mb-4">Account Stats</h3>
+                            <div className="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg h-fit transition-colors">
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4 transition-colors">Account Stats</h3>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-white p-4 rounded shadow-sm text-center">
-                                        <p className="text-2xl font-bold text-green-600">Active</p>
-                                        <p className="text-xs text-gray-500">Account Status</p>
+                                    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-sm text-center transition-colors">
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">Active</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">Account Status</p>
                                     </div>
-                                    <div className="bg-white p-4 rounded shadow-sm text-center">
-                                        <p className="text-2xl font-bold text-green-600">
+                                    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow-sm text-center transition-colors">
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                             <Shield className="h-6 w-6 mx-auto mb-1" />
                                         </p>
-                                        <p className="text-xs text-gray-500 uppercase">{user.roles && user.roles.join(', ')}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">{user.roles && user.roles.join(', ')}</p>
                                     </div>
                                 </div>
                             </div>

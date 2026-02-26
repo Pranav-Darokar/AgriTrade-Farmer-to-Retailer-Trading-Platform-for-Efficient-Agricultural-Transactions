@@ -6,6 +6,10 @@ import { UserPlus, Loader2, User, Phone, Lock, Hash, Eye, EyeOff } from 'lucide-
 
 import logo from '../assets/logo.png';
 
+const inputClasses = "focus:ring-green-500 focus:border-green-500 block w-full pl-9 sm:text-xs border-gray-300 dark:border-gray-600 rounded-md p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border h-9 transition-colors";
+const inputClassesNoIcon = "focus:ring-green-500 focus:border-green-500 block w-full sm:text-xs border-gray-300 dark:border-gray-600 rounded-md p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border h-9 transition-colors";
+const labelClasses = "text-xs font-medium text-gray-700 dark:text-gray-300";
+
 const Signup = () => {
     const [formData, setFormData] = useState({
         password: '',
@@ -73,21 +77,21 @@ const Signup = () => {
 
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-6 sm:px-6 lg:px-8">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-6 sm:px-6 lg:px-8 transition-colors">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="max-w-4xl w-full space-y-4 bg-white p-6 rounded-2xl shadow-xl"
+                className="max-w-4xl w-full space-y-4 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl transition-colors"
             >
                 <div className="text-center">
                     <img src={logo} alt="Logo" className="h-10 w-auto mx-auto" />
-                    <h2 className="mt-2 text-2xl font-bold text-gray-900">
+                    <h2 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
                         Create an Account
                     </h2>
-                    <p className="mt-1 text-sm text-gray-600">
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
+                        <Link to="/login" className="font-medium text-green-600 dark:text-green-400 hover:text-green-500">
                             Sign in
                         </Link>
                     </p>
@@ -97,14 +101,14 @@ const Signup = () => {
 
                     {/* Role Selection - Full Width */}
                     <div>
-                        <label className="text-xs font-medium text-gray-700">I am a...</label>
+                        <label className={labelClasses}>I am a...</label>
                         <div className="mt-1 flex space-x-4">
                             <button
                                 type="button"
                                 onClick={() => setFormData({ ...formData, role: 'farmer' })}
                                 className={`flex-1 py-2 px-4 rounded-md border text-sm transition-all ${formData.role === 'farmer'
-                                    ? 'border-green-500 bg-green-50 text-green-700 font-bold shadow-sm'
-                                    : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                                    ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-bold shadow-sm'
+                                    : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
                                     }`}
                             >
                                 Farmer
@@ -113,8 +117,8 @@ const Signup = () => {
                                 type="button"
                                 onClick={() => setFormData({ ...formData, role: 'retailer' })}
                                 className={`flex-1 py-2 px-4 rounded-md border text-sm transition-all ${formData.role === 'retailer'
-                                    ? 'border-green-500 bg-green-50 text-green-700 font-bold shadow-sm'
-                                    : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                                    ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-bold shadow-sm'
+                                    : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
                                     }`}
                             >
                                 Retailer
@@ -125,16 +129,16 @@ const Signup = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Row 1: Full Name & Mobile */}
                         <div className="relative">
-                            <label className="text-xs font-medium text-gray-700">Full Name</label>
+                            <label className={labelClasses}>Full Name</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <User className="h-4 w-4 text-gray-400" />
+                                    <User className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <input
                                     name="fullName"
                                     type="text"
                                     required
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-9 sm:text-xs border-gray-300 rounded-md p-2 bg-gray-50 border h-9"
+                                    className={inputClasses}
                                     placeholder="John Doe"
                                     value={formData.fullName}
                                     onChange={handleChange}
@@ -143,16 +147,16 @@ const Signup = () => {
                         </div>
 
                         <div className="relative">
-                            <label className="text-xs font-medium text-gray-700">Mobile Number</label>
+                            <label className={labelClasses}>Mobile Number</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Phone className="h-4 w-4 text-gray-400" />
+                                    <Phone className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <input
                                     name="mobileNumber"
                                     type="tel"
                                     required
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-9 sm:text-xs border-gray-300 rounded-md p-2 bg-gray-50 border h-9"
+                                    className={inputClasses}
                                     placeholder="Mobile Number"
                                     value={formData.mobileNumber}
                                     onChange={handleChange}
@@ -162,16 +166,16 @@ const Signup = () => {
 
                         {/* Row 2: Email & Password */}
                         <div className="relative">
-                            <label className="text-xs font-medium text-gray-700">Email (Required)</label>
+                            <label className={labelClasses}>Email (Required)</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <User className="h-4 w-4 text-gray-400" />
+                                    <User className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <input
                                     name="email"
                                     type="email"
                                     required
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-9 sm:text-xs border-gray-300 rounded-md p-2 bg-gray-50 border h-9"
+                                    className={inputClasses}
                                     placeholder="Email Address"
                                     value={formData.email}
                                     onChange={handleChange}
@@ -180,16 +184,16 @@ const Signup = () => {
                         </div>
 
                         <div className="relative">
-                            <label className="text-xs font-medium text-gray-700">Password</label>
+                            <label className={labelClasses}>Password</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-4 w-4 text-gray-400" />
+                                    <Lock className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <input
                                     name="password"
                                     type={showPassword ? "text" : "password"}
                                     required
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-9 pr-10 sm:text-xs border-gray-300 rounded-md p-2 bg-gray-50 border h-9"
+                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-9 pr-10 sm:text-xs border-gray-300 dark:border-gray-600 rounded-md p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border h-9 transition-colors"
                                     placeholder="••••••••"
                                     value={formData.password}
                                     onChange={handleChange}
@@ -200,9 +204,9 @@ const Signup = () => {
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
                                     ) : (
-                                        <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                                        <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
                                     )}
                                 </button>
                             </div>
@@ -210,13 +214,13 @@ const Signup = () => {
 
                         {/* Row 3: Date of Birth & Gender */}
                         <div className="relative">
-                            <label className="text-xs font-medium text-gray-700">Date of Birth</label>
+                            <label className={labelClasses}>Date of Birth</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <input
                                     name="dateOfBirth"
                                     type="date"
                                     required
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full sm:text-xs border-gray-300 rounded-md p-2 bg-gray-50 border h-9"
+                                    className={inputClassesNoIcon}
                                     value={formData.dateOfBirth}
                                     onChange={handleChange}
                                 />
@@ -224,12 +228,12 @@ const Signup = () => {
                         </div>
 
                         <div className="relative">
-                            <label className="text-xs font-medium text-gray-700">Gender</label>
+                            <label className={labelClasses}>Gender</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <select
                                     name="gender"
                                     required
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full sm:text-xs border-gray-300 rounded-md p-2 bg-gray-50 border h-9"
+                                    className={inputClassesNoIcon}
                                     value={formData.gender}
                                     onChange={handleChange}
                                 >
@@ -242,18 +246,18 @@ const Signup = () => {
                         </div>
 
                         <div className="relative">
-                            <label className="text-xs font-medium text-gray-700">
+                            <label className={labelClasses}>
                                 {formData.role === 'farmer' ? 'Aadhaar Number (Optional)' : 'Licence No.'}
                             </label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Hash className="h-4 w-4 text-gray-400" />
+                                    <Hash className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <input
                                     name={formData.role === 'farmer' ? 'aadhaarNumber' : 'licenceNumber'}
                                     type="text"
                                     required={formData.role === 'retailer'}
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-9 sm:text-xs border-gray-300 rounded-md p-2 bg-gray-50 border h-9"
+                                    className={inputClasses}
                                     placeholder={formData.role === 'farmer' ? 'Aadhaar Number' : 'Licence No.'}
                                     value={formData.role === 'farmer' ? formData.aadhaarNumber : formData.licenceNumber}
                                     onChange={handleChange}
@@ -264,12 +268,12 @@ const Signup = () => {
 
                     {/* Address - Full Width */}
                     <div className="relative">
-                        <label className="text-xs font-medium text-gray-700">Address</label>
+                        <label className={labelClasses}>Address</label>
                         <div className="mt-1 relative rounded-md shadow-sm">
                             <textarea
                                 name="address"
                                 required
-                                className="focus:ring-green-500 focus:border-green-500 block w-full sm:text-xs border-gray-300 rounded-md p-2 bg-gray-50 border"
+                                className="focus:ring-green-500 focus:border-green-500 block w-full sm:text-xs border-gray-300 dark:border-gray-600 rounded-md p-2 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border transition-colors"
                                 placeholder="Full Address"
                                 value={formData.address}
                                 onChange={handleChange}
@@ -279,7 +283,7 @@ const Signup = () => {
                     </div>
 
                     {error && (
-                        <div className="text-red-500 text-xs text-center bg-red-50 py-1.5 rounded-md border border-red-100">
+                        <div className="text-red-500 dark:text-red-400 text-xs text-center bg-red-50 dark:bg-red-900/20 py-1.5 rounded-md border border-red-100 dark:border-red-800">
                             {error}
                         </div>
                     )}
@@ -287,7 +291,7 @@ const Signup = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                     >
                         {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Sign Up"}
                     </button>

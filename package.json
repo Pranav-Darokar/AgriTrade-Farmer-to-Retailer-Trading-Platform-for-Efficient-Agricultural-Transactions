@@ -1,0 +1,19 @@
+{
+  "name": "farmer-to-retailer-trading-platform",
+  "version": "1.0.0",
+  "description": "A modern web-based platform facilitating direct trade between farmers and retailers, cutting out middlemen to ensure better prices for produce and fresher goods for consumers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pranav-Darokar/AgriTrade-Farmer-to-Retailer-Trading-Platform-for-Efficient-Agricultural-Transactions.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pranav-Darokar/AgriTrade-Farmer-to-Retailer-Trading-Platform-for-Efficient-Agricultural-Transactions/issues"
+  },
+  "homepage": "https://github.com/Pranav-Darokar/AgriTrade-Farmer-to-Retailer-Trading-Platform-for-Efficient-Agricultural-Transactions#readme"
+}

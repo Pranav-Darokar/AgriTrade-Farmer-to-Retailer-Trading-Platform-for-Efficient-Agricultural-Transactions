@@ -9,14 +9,14 @@ export const CartProvider = ({ children }) => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        const storedCart = localStorage.getItem('cart');
+        const storedCart = sessionStorage.getItem('cart');
         if (storedCart) {
             setCart(JSON.parse(storedCart));
         }
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        sessionStorage.setItem('cart', JSON.stringify(cart));
         calculateTotal();
     }, [cart]);
 

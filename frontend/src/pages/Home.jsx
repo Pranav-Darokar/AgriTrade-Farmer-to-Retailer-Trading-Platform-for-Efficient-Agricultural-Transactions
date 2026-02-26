@@ -84,11 +84,11 @@ const Step = ({ num, title, desc, delay }) => (
 
 /* ─── Hero Background Slideshow (Ken Burns effect) ─── */
 const HERO_IMAGES = [
-    'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1920&q=80', // wheat field golden
-    'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1920&q=80', // paddy field aerial
-    'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1920&q=80', // fresh vegetables
-    'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1920&q=80', // harvest crop rows
-    'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1920&q=80', // farm sunrise
+    'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1920&q=80',
+    'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1920&q=80',
+    'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1920&q=80',
+    'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1920&q=80',
+    'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1920&q=80',
 ];
 
 const HeroBackground = () => {
@@ -128,15 +128,11 @@ const Home = () => {
     return (
         <div className="flex flex-col min-h-screen font-sans bg-white dark:bg-gray-900 transition-colors duration-300">
 
-            {/* ── HERO: Cinematic Animated Background ── */}
+            {/* ── HERO ── */}
             <section className="relative min-h-screen flex items-center text-white overflow-hidden">
-                {/* Ken Burns animated slide images */}
                 <HeroBackground />
-
-                {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-green-950/75 via-green-900/55 to-black/65" />
 
-                {/* Badge */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -192,7 +188,6 @@ const Home = () => {
                         </Link>
                     </motion.div>
 
-                    {/* Scroll Indicator */}
                     <motion.div
                         animate={{ y: [0, 8, 0] }}
                         transition={{ repeat: Infinity, duration: 1.5 }}
@@ -246,11 +241,10 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── AGRICULTURE IN INDIA SECTION ── */}
+            {/* ── OUR MISSION ── */}
             <section className="py-24 bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                        {/* Left images */}
                         <motion.div
                             initial={{ opacity: 0, x: -40 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -258,29 +252,12 @@ const Home = () => {
                             transition={{ duration: 0.7 }}
                             className="grid grid-cols-2 gap-4"
                         >
-                            <img
-                                src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80"
-                                alt="Indian farmer in paddy field"
-                                className="rounded-2xl object-cover w-full h-52 shadow-lg"
-                            />
-                            <img
-                                src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&q=80"
-                                alt="Fresh vegetables"
-                                className="rounded-2xl object-cover w-full h-52 shadow-lg mt-8"
-                            />
-                            <img
-                                src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=600&q=80"
-                                alt="Agricultural harvest"
-                                className="rounded-2xl object-cover w-full h-52 shadow-lg"
-                            />
-                            <img
-                                src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80"
-                                alt="Farm produce market"
-                                className="rounded-2xl object-cover w-full h-52 shadow-lg mt-8"
-                            />
+                            <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80" alt="Indian farmer in paddy field" className="rounded-2xl object-cover w-full h-52 shadow-lg" />
+                            <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&q=80" alt="Fresh vegetables" className="rounded-2xl object-cover w-full h-52 shadow-lg mt-8" />
+                            <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=600&q=80" alt="Agricultural harvest" className="rounded-2xl object-cover w-full h-52 shadow-lg" />
+                            <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80" alt="Farm produce market" className="rounded-2xl object-cover w-full h-52 shadow-lg mt-8" />
                         </motion.div>
 
-                        {/* Right text */}
                         <motion.div
                             initial={{ opacity: 0, x: 40 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -296,10 +273,10 @@ const Home = () => {
                             </p>
                             <div className="space-y-4">
                                 {[
-                                    { icon: <Sprout className="h-5 w-5 text-green-600" />, text: "From wheat fields of Punjab to coconut groves of Kerala" },
-                                    { icon: <BarChart2 className="h-5 w-5 text-green-600" />, text: "Farmers earn up to 40% more per harvest" },
-                                    { icon: <Clock className="h-5 w-5 text-green-600" />, text: "Orders fulfilled within 24-48 hours of harvest" },
-                                    { icon: <Award className="h-5 w-5 text-green-600" />, text: "Verified and quality-checked produce listings" },
+                                    { icon: <Sprout className="h-5 w-5 text-green-600" />, text: 'From wheat fields of Punjab to coconut groves of Kerala' },
+                                    { icon: <BarChart2 className="h-5 w-5 text-green-600" />, text: 'Farmers earn up to 40% more per harvest' },
+                                    { icon: <Clock className="h-5 w-5 text-green-600" />, text: 'Orders fulfilled within 24-48 hours of harvest' },
+                                    { icon: <Award className="h-5 w-5 text-green-600" />, text: 'Verified and quality-checked produce listings' },
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-3">
                                         <div className="w-9 h-9 bg-green-50 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -348,7 +325,6 @@ const Home = () => {
                             transition={{ duration: 0.6 }}
                             className="relative rounded-3xl overflow-hidden shadow-2xl"
                         >
-                            {/* Background image */}
                             <div className="relative h-full min-h-[420px]">
                                 <img
                                     src="https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=900&q=80"
@@ -356,8 +332,6 @@ const Home = () => {
                                     className="absolute inset-0 w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-br from-green-900/85 to-green-700/70" />
-
-                                {/* Content overlay */}
                                 <div className="relative p-10 h-full flex flex-col justify-between text-white min-h-[420px]">
                                     <div>
                                         <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
@@ -370,8 +344,6 @@ const Home = () => {
                                             Our streamlined platform connects farmers directly to retailers, cutting waste, middlemen, and delivery time.
                                         </p>
                                     </div>
-
-                                    {/* Mini stats */}
                                     <div className="grid grid-cols-3 gap-4 mt-8">
                                         {[
                                             { val: '48h', label: 'Avg Delivery' },
@@ -384,8 +356,6 @@ const Home = () => {
                                             </div>
                                         ))}
                                     </div>
-
-                                    {/* CTA row */}
                                     <div className="flex items-center gap-3 mt-6">
                                         <Link
                                             to="/signup"

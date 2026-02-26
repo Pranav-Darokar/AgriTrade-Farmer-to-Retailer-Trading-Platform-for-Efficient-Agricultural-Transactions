@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plus, Loader2, DollarSign, Package, FileText, Tag, Upload, X, Image as ImageIcon } from 'lucide-react';
 
+const inputClasses = "focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 rounded-lg p-3 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-colors";
+const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
+
 const AddProduct = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -111,7 +114,7 @@ const AddProduct = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl shadow-xl overflow-hidden"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-colors"
             >
                 <div className="bg-green-600 px-8 py-6">
                     <h1 className="text-2xl font-bold text-white flex items-center">
@@ -123,16 +126,16 @@ const AddProduct = () => {
 
                 <form onSubmit={handleSubmit} className="p-8 space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                        <label className={labelClasses}>Product Name</label>
                         <div className="relative rounded-md shadow-sm">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Tag className="h-5 w-5 text-gray-400" />
+                                <Tag className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                             </div>
                             <input
                                 type="text"
                                 name="name"
                                 required
-                                className="focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg p-3 border"
+                                className={inputClasses}
                                 placeholder="e.g. Organic Tomatoes"
                                 value={formData.name}
                                 onChange={handleChange}
@@ -141,15 +144,15 @@ const AddProduct = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <label className={labelClasses}>Description</label>
                         <div className="relative rounded-md shadow-sm">
                             <div className="absolute top-3 left-3 flex items-start pointer-events-none">
-                                <FileText className="h-5 w-5 text-gray-400" />
+                                <FileText className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                             </div>
                             <textarea
                                 name="description"
                                 rows="4"
-                                className="focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg p-3 border"
+                                className="focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 rounded-lg p-3 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                                 placeholder="Describe your product (freshness, origin, etc.)"
                                 value={formData.description}
                                 onChange={handleChange}
@@ -159,10 +162,10 @@ const AddProduct = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Price per Unit (₹)</label>
+                            <label className={labelClasses}>Price per Unit (₹)</label>
                             <div className="relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <DollarSign className="h-5 w-5 text-gray-400" />
+                                    <DollarSign className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <input
                                     type="number"
@@ -170,7 +173,7 @@ const AddProduct = () => {
                                     step="0.01"
                                     min="0"
                                     required
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg p-3 border"
+                                    className={inputClasses}
                                     placeholder="0.00"
                                     value={formData.price}
                                     onChange={handleChange}
@@ -181,18 +184,18 @@ const AddProduct = () => {
                         <div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity Available</label>
+                                <label className={labelClasses}>Quantity Available</label>
                                 <div className="flex space-x-2">
                                     <div className="relative rounded-md shadow-sm w-full">
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Package className="h-5 w-5 text-gray-400" />
+                                            <Package className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                                         </div>
                                         <input
                                             type="number"
                                             name="quantity"
                                             min="0"
                                             required
-                                            className="focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg p-3 border"
+                                            className={inputClasses}
                                             placeholder="e.g. 100"
                                             value={formData.quantity}
                                             onChange={handleChange}
@@ -202,7 +205,7 @@ const AddProduct = () => {
                                         name="unit"
                                         value={formData.unit || 'Kg'}
                                         onChange={handleChange}
-                                        className="block w-24 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md border"
+                                        className="block w-24 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors"
                                     >
                                         <option value="Kg">Kg</option>
                                         <option value="Gram">Gram</option>
@@ -218,16 +221,16 @@ const AddProduct = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                            <label className={labelClasses}>Category</label>
                             <div className="relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Tag className="h-5 w-5 text-gray-400" />
+                                    <Tag className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                                 </div>
                                 <select
                                     name="category"
                                     value={formData.category}
                                     onChange={handleChange}
-                                    className="focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg p-3 border"
+                                    className={inputClasses}
                                 >
                                     <option value="Fresh Vegetables">Fresh Vegetables</option>
                                     <option value="Fruits">Fruits</option>
@@ -241,11 +244,11 @@ const AddProduct = () => {
 
                     {/* Image URL Input */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+                        <label className={labelClasses}>Product Image</label>
 
                         {/* File Upload Option */}
                         <div className="mb-4">
-                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-green-500 transition-colors">
+                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md hover:border-green-500 dark:hover:border-green-400 transition-colors bg-white dark:bg-gray-700/50">
                                 <div className="space-y-1 text-center">
                                     {previewUrl ? (
                                         <div className="relative">
@@ -263,18 +266,18 @@ const AddProduct = () => {
                                         </div>
                                     ) : (
                                         <>
-                                            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                                            <div className="flex text-sm text-gray-600">
+                                            <Upload className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                                            <div className="flex text-sm text-gray-600 dark:text-gray-400">
                                                 <label
                                                     htmlFor="file-upload"
-                                                    className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500"
+                                                    className="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-green-600 dark:text-green-400 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500 dark:focus-within:ring-offset-gray-800 px-1"
                                                 >
                                                     <span>Upload a file</span>
                                                     <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept="image/*" />
                                                 </label>
                                                 <p className="pl-1">or drag and drop</p>
                                             </div>
-                                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 10MB</p>
                                         </>
                                     )}
                                 </div>
@@ -283,21 +286,21 @@ const AddProduct = () => {
 
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                <div className="w-full border-t border-gray-300" />
+                                <div className="w-full border-t border-gray-300 dark:border-gray-600" />
                             </div>
                             <div className="relative flex justify-center">
-                                <span className="px-2 bg-white text-sm text-gray-500">Or use URL</span>
+                                <span className="px-2 bg-white dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400">Or use URL</span>
                             </div>
                         </div>
 
                         <div className="mt-4 relative rounded-md shadow-sm">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <ImageIcon className="h-5 w-5 text-gray-400" />
+                                <ImageIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                             </div>
                             <input
                                 type="text"
                                 name="imageUrl"
-                                className="focus:ring-green-500 focus:border-green-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg p-3 border"
+                                className={`${inputClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
                                 placeholder="https://example.com/image.jpg"
                                 value={formData.imageUrl}
                                 onChange={(e) => {
@@ -308,14 +311,14 @@ const AddProduct = () => {
                                 disabled={!!selectedFile}
                             />
                         </div>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             {selectedFile ? 'File selected (URL input disabled)' : 'Enter a direct link to an image'}
                         </p>
                     </div>
 
                     {
                         error && (
-                            <div className="p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
+                            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800">
                                 {error}
                             </div>
                         )
@@ -325,14 +328,14 @@ const AddProduct = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/dashboard')}
-                            className="px-6 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            className="px-6 py-3 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading || uploading}
-                            className="px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-70 flex items-center"
+                            className="px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800 disabled:opacity-70 flex items-center transition-colors"
                         >
                             {(loading || uploading) ? (
                                 <>
