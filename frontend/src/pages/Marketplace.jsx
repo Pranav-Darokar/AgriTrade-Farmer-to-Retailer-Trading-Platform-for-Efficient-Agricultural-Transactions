@@ -100,17 +100,17 @@ const Marketplace = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Marketplace</h1>
-                    <p className="mt-1 text-gray-500">Fresh produce directly from farmers.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Marketplace</h1>
+                    <p className="mt-1 text-gray-500 dark:text-gray-400">Fresh produce directly from farmers.</p>
                 </div>
 
                 <div className="relative w-full md:w-96">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-gray-400" />
+                        <Search className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                         type="text"
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 sm:text-sm transition-colors"
                         placeholder="Search for products..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -120,11 +120,11 @@ const Marketplace = () => {
 
             {/* Filter Section */}
             {!loading && products.length > 0 && (
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 space-y-6">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-8 space-y-6 transition-colors">
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center gap-2">
-                            <Filter className="h-4 w-4 text-green-600" />
-                            <span className="text-sm font-bold text-gray-700 uppercase tracking-wider">Categories</span>
+                            <Filter className="h-4 w-4 text-green-600 dark:text-green-400" />
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Categories</span>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {categories.map(cat => (
@@ -133,7 +133,7 @@ const Marketplace = () => {
                                     onClick={() => setCategoryFilter(cat)}
                                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${categoryFilter === cat
                                         ? 'bg-green-600 text-white border-green-600 shadow-md'
-                                        : 'bg-white text-gray-600 border-gray-200 hover:border-green-500 hover:text-green-600'
+                                        : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-green-500 hover:text-green-600 dark:hover:text-green-400'
                                         }`}
                                 >
                                     {cat}
@@ -142,15 +142,15 @@ const Marketplace = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-8 pt-6 border-t border-gray-100">
+                    <div className="flex flex-wrap items-center gap-8 pt-6 border-t border-gray-100 dark:border-gray-700">
 
                         {/* Sorting */}
                         <div className="flex flex-col gap-2">
-                            <label className="text-xs text-gray-500 uppercase tracking-wider font-bold">Sort By</label>
+                            <label className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold">Sort By</label>
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="text-sm border-gray-200 rounded-lg focus:ring-green-500 focus:border-green-500 p-2 border bg-white min-w-[160px]"
+                                className="text-sm border-gray-200 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500 p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 min-w-[160px] transition-colors"
                             >
                                 <option value="newest">Newest First</option>
                                 <option value="price-low">Price: Low to High</option>
@@ -164,14 +164,14 @@ const Marketplace = () => {
                             {(searchTerm || categoryFilter !== 'All' || sortBy !== 'newest') && (
                                 <button
                                     onClick={resetFilters}
-                                    className="text-sm text-red-600 hover:text-red-700 font-bold flex items-center gap-1 transition-colors"
+                                    className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold flex items-center gap-1 transition-colors"
                                 >
                                     <X className="h-4 w-4" />
                                     Clear all filters
                                 </button>
                             )}
-                            <div className="ml-auto text-sm text-gray-500">
-                                Showing <span className="font-bold text-gray-900">{filteredProducts.length}</span> products
+                            <div className="ml-auto text-sm text-gray-500 dark:text-gray-400">
+                                Showing <span className="font-bold text-gray-900 dark:text-white">{filteredProducts.length}</span> products
                             </div>
                         </div>
                     </div>
@@ -183,12 +183,12 @@ const Marketplace = () => {
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                 </div>
             ) : error ? (
-                <div className="text-center text-red-600 py-10">{error}</div>
+                <div className="text-center text-red-600 dark:text-red-400 py-10">{error}</div>
             ) : filteredProducts.length === 0 ? (
                 <div className="text-center py-16">
-                    <Package className="mx-auto h-16 w-16 text-gray-300" />
-                    <h3 className="mt-4 text-lg font-medium text-gray-900">No products found</h3>
-                    <p className="mt-1 text-gray-500">Try adjusting your search terms or check back later.</p>
+                    <Package className="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" />
+                    <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">No products found</h3>
+                    <p className="mt-1 text-gray-500 dark:text-gray-400">Try adjusting your search terms or check back later.</p>
                 </div>
             ) : (
                 <motion.div
@@ -207,9 +207,9 @@ const Marketplace = () => {
                                 initial="hidden"
                                 animate="visible"
                                 exit="hidden"
-                                className={`group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col ${product.quantity <= 0 ? 'opacity-80' : ''}`}
+                                className={`group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-black/30 transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col ${product.quantity <= 0 ? 'opacity-80' : ''}`}
                             >
-                                <div className="h-48 bg-gray-200 relative">
+                                <div className="h-48 bg-gray-200 dark:bg-gray-700 relative">
                                     {product.imageUrl ? (
                                         <img
                                             src={product.imageUrl}
@@ -221,8 +221,8 @@ const Marketplace = () => {
                                             }}
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-green-50">
-                                            <Package className={`h-16 w-16 text-green-200 ${product.quantity <= 0 ? 'grayscale' : ''}`} />
+                                        <div className="w-full h-full flex items-center justify-center bg-green-50 dark:bg-green-900/20">
+                                            <Package className={`h-16 w-16 text-green-200 dark:text-green-800 ${product.quantity <= 0 ? 'grayscale' : ''}`} />
                                         </div>
                                     )}
                                     <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
@@ -236,7 +236,7 @@ const Marketplace = () => {
                                             </span>
                                         )}
                                         {product.category && (
-                                            <span className="bg-white/90 backdrop-blur-sm text-green-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-md border border-green-100">
+                                            <span className="bg-white/90 dark:bg-gray-900/80 backdrop-blur-sm text-green-800 dark:text-green-300 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-md border border-green-100 dark:border-green-800">
                                                 {product.category}
                                             </span>
                                         )}
@@ -245,27 +245,27 @@ const Marketplace = () => {
 
                                 <div className="p-5 flex-grow flex flex-col">
                                     <div className="flex-grow">
-                                        <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">{product.name}</h3>
-                                        <p className="text-sm text-gray-500 line-clamp-2 mb-3 h-10">{product.description}</p>
+                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 line-clamp-1">{product.name}</h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3 h-10">{product.description}</p>
 
-                                        <div className="flex items-center text-[11px] font-medium text-gray-400 bg-gray-50 p-1.5 rounded-lg mb-4">
-                                            <Info className="h-3 w-3 mr-1 text-green-600" />
-                                            <span>Farmer: <span className="text-gray-700 uppercase">{product.farmer?.fullName || product.farmer?.username || 'Farmer'}</span></span>
+                                        <div className="flex items-center text-[11px] font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 p-1.5 rounded-lg mb-4">
+                                            <Info className="h-3 w-3 mr-1 text-green-600 dark:text-green-400" />
+                                            <span>Farmer: <span className="text-gray-700 dark:text-gray-300 uppercase">{product.farmer?.fullName || product.farmer?.username || 'Farmer'}</span></span>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                                        <span className="text-2xl font-bold text-gray-900 flex items-center">
+                                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
+                                        <span className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
                                             <IndianRupee className="h-5 w-5 mr-1" />
                                             {product.price}
                                         </span>
-                                        <span className="text-gray-500 text-sm">/ {product.unit || 'Unit'}</span>
+                                        <span className="text-gray-500 dark:text-gray-400 text-sm">/ {product.unit || 'Unit'}</span>
                                         {(!user || (user && user.roles.includes('RETAILER'))) && (
                                             <div className="flex space-x-2">
                                                 {product.quantity <= 0 ? (
                                                     <button
                                                         disabled
-                                                        className="w-full px-4 py-2 bg-gray-200 text-gray-500 text-sm font-bold rounded-lg cursor-not-allowed uppercase tracking-wider border border-gray-300"
+                                                        className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm font-bold rounded-lg cursor-not-allowed uppercase tracking-wider border border-gray-300 dark:border-gray-600"
                                                     >
                                                         Sold Out
                                                     </button>
@@ -280,7 +280,7 @@ const Marketplace = () => {
                                                         <button
                                                             onClick={() => handleAddToCart(product)}
                                                             className={`p-2 rounded-lg transition-colors shadow-sm hover:shadow-md ${addedItems[product.id]
-                                                                ? 'bg-green-100 text-green-700'
+                                                                ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400'
                                                                 : 'bg-green-600 text-white hover:bg-green-700'
                                                                 }`}
                                                             disabled={addedItems[product.id]}
