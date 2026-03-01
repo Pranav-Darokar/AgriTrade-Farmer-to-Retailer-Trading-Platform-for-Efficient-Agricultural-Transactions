@@ -31,8 +31,7 @@ const EditProduct = () => {
 
     const fetchProductDetails = async () => {
         try {
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const token = userData?.token;
+            const token = user?.token;
 
             const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/farmer/products`, {
                 headers: {
@@ -85,8 +84,7 @@ const EditProduct = () => {
         uploadData.append('file', selectedFile);
 
         try {
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const token = userData?.token;
+            const token = user?.token;
 
             const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, uploadData, {
                 headers: {
@@ -122,8 +120,7 @@ const EditProduct = () => {
                 }
             }
 
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const token = userData?.token;
+            const token = user?.token;
 
             const productData = { ...formData, imageUrl: finalImageUrl };
 

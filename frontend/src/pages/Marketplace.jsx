@@ -25,13 +25,16 @@ const Marketplace = () => {
 
     useEffect(() => {
         fetchProducts();
+        // Poll for updates every 30 seconds to simulate real-time stock changes
+        const interval = setInterval(fetchProducts, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const fetchProducts = async () => {
         try {
             // Public endpoint
             const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/public/products`);
-            setProducts(response.data);
+            setProducts(Array.isArray(response.data) ? response.data : []);
         } catch (err) {
             console.error(err);
             setError('Failed to load marketplace products.');
@@ -255,42 +258,54 @@ const Marketplace = () => {
                                     </div>
 
                                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
-                                        <span className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
-                                            <IndianRupee className="h-5 w-5 mr-1" />
-                                            {product.price}
-                                        </span>
-                                        <span className="text-gray-500 dark:text-gray-400 text-sm">/ {product.unit || 'Unit'}</span>
-                                        {(!user || (user && user.roles.includes('RETAILER'))) && (
-                                            <div className="flex space-x-2">
-                                                {product.quantity <= 0 ? (
-                                                    <button
-                                                        disabled
-                                                        className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm font-bold rounded-lg cursor-not-allowed uppercase tracking-wider border border-gray-300 dark:border-gray-600"
-                                                    >
-                                                        Sold Out
-                                                    </button>
+                                        <div className="flex flex-col">
+                                            <span className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                                                <IndianRupee className="h-5 w-5 mr-1" />
+                                                {product.price}
+                                            </span>
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">per {product.unit || 'Unit'}</span>
+                                        </div>
+
+                                        <div className="text-right">
+                                            <div className={`text-xs font-bold uppercase tracking-tight mb-1 ${product.quantity <= 10 ? 'text-orange-600 dark:text-orange-400 animate-pulse' : 'text-gray-400 dark:text-gray-500'}`}>
+                                                {product.quantity > 0 ? (
+                                                    <>Only {product.quantity} {product.unit} left</>
                                                 ) : (
-                                                    <>
-                                                        <button
-                                                            onClick={() => handleBuyNow(product)}
-                                                            className="px-3 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm"
-                                                        >
-                                                            Buy Now
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleAddToCart(product)}
-                                                            className={`p-2 rounded-lg transition-colors shadow-sm hover:shadow-md ${addedItems[product.id]
-                                                                ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400'
-                                                                : 'bg-green-600 text-white hover:bg-green-700'
-                                                                }`}
-                                                            disabled={addedItems[product.id]}
-                                                        >
-                                                            {addedItems[product.id] ? <Check className="h-5 w-5" /> : <ShoppingCart className="h-5 w-5" />}
-                                                        </button>
-                                                    </>
+                                                    <span className="text-red-600">Out of Stock</span>
                                                 )}
                                             </div>
-                                        )}
+                                            {(!user || (user && user.roles.includes('RETAILER'))) && (
+                                                <div className="flex space-x-2">
+                                                    {product.quantity <= 0 ? (
+                                                        <button
+                                                            disabled
+                                                            className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm font-bold rounded-lg cursor-not-allowed uppercase tracking-wider border border-gray-300 dark:border-gray-600"
+                                                        >
+                                                            Sold Out
+                                                        </button>
+                                                    ) : (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleBuyNow(product)}
+                                                                className="px-3 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm"
+                                                            >
+                                                                Buy Now
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleAddToCart(product)}
+                                                                className={`p-2 rounded-lg transition-colors shadow-sm hover:shadow-md ${addedItems[product.id]
+                                                                    ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400'
+                                                                    : 'bg-green-600 text-white hover:bg-green-700'
+                                                                    }`}
+                                                                disabled={addedItems[product.id]}
+                                                            >
+                                                                {addedItems[product.id] ? <Check className="h-5 w-5" /> : <ShoppingCart className="h-5 w-5" />}
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>

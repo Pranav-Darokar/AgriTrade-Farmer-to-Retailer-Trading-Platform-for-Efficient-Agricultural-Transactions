@@ -16,8 +16,7 @@ const MyProducts = () => {
 
     const fetchProducts = async () => {
         try {
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const token = userData?.token;
+            const token = user?.token;
 
             const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/farmer/products`, {
                 headers: {
@@ -42,8 +41,7 @@ const MyProducts = () => {
         if (!window.confirm(confirmMsg)) return;
 
         try {
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const token = userData?.token;
+            const token = user?.token;
 
             const newQuantity = isCurrentlyOutOfStock ? 50 : 0;
             const updatedProduct = { ...product, quantity: newQuantity };
@@ -71,8 +69,7 @@ const MyProducts = () => {
         if (!window.confirm('Are you sure you want to delete this product?')) return;
 
         try {
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const token = userData?.token;
+            const token = user?.token;
 
             await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/farmer/products/${id}`, {
                 headers: {

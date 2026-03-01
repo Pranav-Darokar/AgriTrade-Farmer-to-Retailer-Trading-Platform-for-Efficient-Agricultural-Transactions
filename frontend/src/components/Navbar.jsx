@@ -4,7 +4,8 @@ import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import {
     Menu, X, LogOut, User, ShoppingCart, ClipboardList,
-    Moon, Sun, ChevronDown, Package, LayoutDashboard
+    Moon, Sun, ChevronDown, Package, LayoutDashboard,
+    ShieldCheck, Store, Sprout, ChevronRight
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -59,6 +60,29 @@ const Navbar = () => {
     const isRetailer = user?.roles?.some(r => r.includes('RETAILER'));
     const isFarmer = user?.roles?.some(r => r.includes('FARMER'));
     const isAdmin = user?.roles?.some(r => r.includes('ADMIN'));
+
+    const getRoleConfig = () => {
+        if (isAdmin) return {
+            label: 'Admin',
+            icon: ShieldCheck,
+            color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800/50',
+            glow: 'shadow-purple-500/20'
+        };
+        if (isFarmer) return {
+            label: 'Farmer',
+            icon: Sprout,
+            color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/50',
+            glow: 'shadow-emerald-500/20'
+        };
+        if (isRetailer) return {
+            label: 'Retailer',
+            icon: Store,
+            color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/50',
+            glow: 'shadow-blue-500/20'
+        };
+        return null;
+    };
+    const role = getRoleConfig();
 
     return (
         <nav
@@ -160,7 +184,7 @@ const Navbar = () => {
                                     onClick={() => setProfileOpen(!profileOpen)}
                                     className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
                                 >
-                                    <div className="h-7 w-7 rounded-full overflow-hidden ring-2 ring-green-400 ring-offset-1 dark:ring-offset-gray-900">
+                                    <div className="relative h-8 w-8 rounded-full overflow-hidden ring-2 ring-green-400 ring-offset-1 dark:ring-offset-gray-900 bg-gray-100 dark:bg-gray-800">
                                         {user.profilePhoto ? (
                                             <img
                                                 src={user.profilePhoto.startsWith('http') ? user.profilePhoto : `${import.meta.env.VITE_API_BASE_URL}${user.profilePhoto}`}
@@ -174,13 +198,26 @@ const Navbar = () => {
                                             />
                                         ) : null}
                                         <div className={`h-full w-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center ${user.profilePhoto ? 'hidden' : ''}`}>
-                                            <User size={14} className="text-white" />
+                                            <User size={16} className="text-white" />
                                         </div>
                                     </div>
-                                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-200 max-w-[80px] truncate">
-                                        {user.name?.split(' ')[0] || 'Me'}
-                                    </span>
-                                    <ChevronDown size={12} className={`text-gray-500 transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} />
+                                    <div className="flex flex-col items-start leading-tight ml-1">
+                                        <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-0.5">
+                                            Account
+                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-bold text-gray-800 dark:text-gray-100 truncate max-w-[90px]">
+                                                {user.fullName?.split(' ')[0] || user.name?.split(' ')[0] || 'User'}
+                                            </span>
+                                            {role && (
+                                                <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[8px] font-black uppercase tracking-tighter ${role.color} shadow-sm`}>
+                                                    <role.icon className="h-2.5 w-2.5" />
+                                                    {role.label}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <ChevronDown size={14} className={`text-gray-400 ml-1 transition-transform duration-300 ${profileOpen ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {/* Dropdown */}
@@ -316,8 +353,22 @@ const Navbar = () => {
                                             onClick={() => setIsOpen(false)}
                                             className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                         >
-                                            <User size={15} className="text-green-600" />
-                                            {user.name || 'Profile'}
+                                            <div className="flex items-center justify-between w-full">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-1.5 rounded-lg ${role?.color || 'bg-gray-100 dark:bg-gray-800'}`}>
+                                                        {role ? <role.icon size={16} /> : <User size={16} />}
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-0.5">{role?.label || 'Account'}</span>
+                                                        <span className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
+                                                            {user.fullName || user.name || 'My Profile'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400">
+                                                    <ChevronRight size={16} />
+                                                </div>
+                                            </div>
                                         </Link>
                                         {isFarmer && (
                                             <Link

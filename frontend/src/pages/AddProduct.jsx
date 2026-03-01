@@ -47,8 +47,7 @@ const AddProduct = () => {
         uploadData.append('file', selectedFile);
 
         try {
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const token = userData?.token;
+            const token = user?.token;
 
             const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, uploadData, {
                 headers: {
@@ -84,8 +83,7 @@ const AddProduct = () => {
                 }
             }
 
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const token = userData?.token;
+            const token = user?.token;
 
             // Use finalImageUrl
             const productData = { ...formData, imageUrl: finalImageUrl };
