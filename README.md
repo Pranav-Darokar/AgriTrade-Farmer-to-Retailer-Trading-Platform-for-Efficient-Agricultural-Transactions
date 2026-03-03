@@ -68,6 +68,20 @@ Ensure you have the following installed:
     ```
     The backend will start on `http://localhost:8080`.
 
+### 💳 Razorpay Integration (Testing Mode)
+
+1.  **Get Test Keys:**
+    - Sign up on [Razorpay](https://razorpay.com/).
+    - Go to Settings > API Keys and generate test keys.
+2.  **Update Environment Variables:**
+    - Either update `src/main/resources/application.properties` directly or set the following environment variables:
+      ```bash
+      RAZORPAY_KEY_ID=your_test_key_id
+      RAZORPAY_KEY_SECRET=your_test_key_secret
+      ```
+3.  **Testing:**
+    - Use dummy card details provided by Razorpay for testing transactions in development mode.
+
 ### Frontend Setup
 
 1.  **Navigate to the frontend directory:**

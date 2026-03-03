@@ -90,6 +90,7 @@ public class OrderController {
         if (currentUser.getRole() == Role.FARMER) {
             long orderCount = orderRepository.countDistinctByItemsProductFarmer(currentUser);
             BigDecimal totalRevenue = orderRepository.sumTotalAmountByFarmer(currentUser);
+            BigDecimal receivedPayments = orderRepository.sumCompletedAmountByFarmer(currentUser);
             long activeListings = productRepository.findByFarmer(currentUser).size();
             List<Order> recentOrders = orderRepository
                     .findDistinctByItemsProductFarmerOrderByOrderDateDesc(currentUser);
@@ -100,6 +101,7 @@ public class OrderController {
 
             stats.put("orderCount", orderCount);
             stats.put("totalRevenue", totalRevenue != null ? totalRevenue : BigDecimal.ZERO);
+            stats.put("receivedPayments", receivedPayments != null ? receivedPayments : BigDecimal.ZERO);
             stats.put("activeListings", activeListings);
             stats.put("recentOrders", recentOrders);
         } else if (currentUser.getRole() == Role.RETAILER) {

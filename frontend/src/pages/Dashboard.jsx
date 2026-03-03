@@ -5,7 +5,7 @@ import OrderService from '../services/OrderService';
 import { motion } from 'framer-motion';
 import {
     Plus, ShoppingBag, List, TrendingUp, IndianRupee, Package,
-    Calendar, Clock, User, ArrowRight, Loader2
+    Calendar, Clock, User, ArrowRight, Loader2, BadgeCheck
 } from 'lucide-react';
 
 const STATUS_STYLES = {
@@ -107,16 +107,17 @@ const Dashboard = () => {
                     )}
 
                     {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        {/* Total Money Card */}
                         <motion.div variants={itemVariants} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border-l-4 border-green-500 transition-colors">
                             <div className="flex justify-between items-center">
                                 <div>
                                     <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        {isFarmer ? 'Total Sales Revenue' : 'Total Amount Spent'}
+                                        {isFarmer ? 'Potential Sales' : 'Total Spent'}
                                     </p>
                                     <p className="text-2xl font-bold text-gray-900 dark:text-white flex items-center mt-1">
                                         <IndianRupee className="h-6 w-6" />
-                                        {Number(totalMoney).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        {Number(totalMoney).toLocaleString('en-IN', { minimumFractionDigits: 0 })}
                                     </p>
                                 </div>
                                 <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-full">
@@ -125,32 +126,62 @@ const Dashboard = () => {
                             </div>
                         </motion.div>
 
-                        <motion.div variants={itemVariants} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border-l-4 border-blue-500 transition-colors">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                        {isFarmer ? 'Total Orders Received' : 'Total Orders Placed'}
-                                    </p>
-                                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{orderCount}</p>
-                                </div>
-                                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                                    <ShoppingBag className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {isFarmer && (
-                            <motion.div variants={itemVariants} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border-l-4 border-purple-500 transition-colors">
+                        {/* Farmer: Payments Received Card / Retailer: Orders Card */}
+                        {isFarmer ? (
+                            <motion.div variants={itemVariants} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border-l-4 border-emerald-500 transition-colors">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Listings</p>
-                                        <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{activeListings}</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Payments Received</p>
+                                        <p className="text-2xl font-bold text-gray-900 dark:text-white flex items-center mt-1 text-emerald-600 dark:text-emerald-400">
+                                            <IndianRupee className="h-6 w-6" />
+                                            {Number(stats?.receivedPayments || 0).toLocaleString('en-IN', { minimumFractionDigits: 0 })}
+                                        </p>
                                     </div>
-                                    <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-                                        <Package className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                                    <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
+                                        <BadgeCheck className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                 </div>
                             </motion.div>
+                        ) : (
+                            <motion.div variants={itemVariants} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border-l-4 border-blue-500 transition-colors">
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders Placed</p>
+                                        <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{orderCount}</p>
+                                    </div>
+                                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                                        <ShoppingBag className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Common/Specialized Cards */}
+                        {isFarmer && (
+                            <>
+                                <motion.div variants={itemVariants} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border-l-4 border-blue-500 transition-colors">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Orders Received</p>
+                                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{orderCount}</p>
+                                        </div>
+                                        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                                            <ShoppingBag className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                                <motion.div variants={itemVariants} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border-l-4 border-purple-500 transition-colors">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Listings</p>
+                                            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{activeListings}</p>
+                                        </div>
+                                        <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+                                            <Package className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </>
                         )}
 
                         {isRetailer && (
@@ -161,8 +192,8 @@ const Dashboard = () => {
                                         <p className="text-2xl font-bold text-gray-900 dark:text-white flex items-center mt-1">
                                             <IndianRupee className="h-5 w-5" />
                                             {orderCount > 0
-                                                ? (Number(totalMoney) / orderCount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                                                : '0.00'}
+                                                ? (Number(totalMoney) / orderCount).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+                                                : '0'}
                                         </p>
                                     </div>
                                     <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">

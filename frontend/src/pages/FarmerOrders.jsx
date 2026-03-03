@@ -54,6 +54,23 @@ const STATUS_STYLES = {
     },
 };
 
+const PAYMENT_STYLES = {
+    COMPLETED: {
+        bg: 'bg-green-50 dark:bg-green-900/30',
+        text: 'text-green-700 dark:text-green-400',
+        border: 'border-green-200 dark:border-green-800',
+        label: 'PAID',
+        icon: <BadgeCheck className="h-3 w-3 mr-1" />
+    },
+    PENDING: {
+        bg: 'bg-gray-100 dark:bg-gray-800',
+        text: 'text-gray-600 dark:text-gray-400',
+        border: 'border-gray-200 dark:border-gray-700',
+        label: 'PENDING PAYMENT',
+        icon: <Clock className="h-3 w-3 mr-1" />
+    }
+};
+
 const FarmerOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -146,8 +163,8 @@ const FarmerOrders = () => {
                             key={status}
                             onClick={() => setFilterStatus(status)}
                             className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${filterStatus === status
-                                    ? 'bg-green-600 text-white shadow-lg shadow-green-600/20'
-                                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                ? 'bg-green-600 text-white shadow-lg shadow-green-600/20'
+                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                                 }`}
                         >
                             {status === 'ALL' ? 'Everything' : status}
@@ -203,10 +220,15 @@ const FarmerOrders = () => {
                                                 <Package className="h-7 w-7" />
                                             </div>
                                             <div>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex flex-wrap items-center gap-2">
                                                     <h3 className="text-xl font-extrabold text-gray-900 dark:text-white transition-colors">Order #{order.id}</h3>
                                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${style.bg} ${style.text} ${style.border}`}>
                                                         {style.label}
+                                                    </span>
+                                                    {/* Payment Status Badge */}
+                                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${PAYMENT_STYLES[order.paymentStatus || 'PENDING'].bg} ${PAYMENT_STYLES[order.paymentStatus || 'PENDING'].text} border ${PAYMENT_STYLES[order.paymentStatus || 'PENDING'].border}`}>
+                                                        {PAYMENT_STYLES[order.paymentStatus || 'PENDING'].icon}
+                                                        {PAYMENT_STYLES[order.paymentStatus || 'PENDING'].label}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -232,8 +254,8 @@ const FarmerOrders = () => {
                                                             onClick={() => handleUpdateStatus(order.id, status)}
                                                             disabled={isLoading}
                                                             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${isCancel
-                                                                    ? 'text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-900/20'
-                                                                    : 'bg-green-600 dark:bg-green-700 text-white shadow-lg shadow-green-600/10 hover:bg-green-700 dark:hover:bg-green-600 hover:-translate-y-0.5'
+                                                                ? 'text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-900/20'
+                                                                : 'bg-green-600 dark:bg-green-700 text-white shadow-lg shadow-green-600/10 hover:bg-green-700 dark:hover:bg-green-600 hover:-translate-y-0.5'
                                                                 } disabled:opacity-50`}
                                                         >
                                                             {isLoading ? (

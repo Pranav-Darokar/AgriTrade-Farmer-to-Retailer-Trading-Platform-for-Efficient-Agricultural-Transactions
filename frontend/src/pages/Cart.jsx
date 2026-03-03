@@ -17,6 +17,7 @@ const Cart = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('razorpay');
 
     const handleCheckout = async () => {
         if (!user) {
@@ -34,13 +35,69 @@ const Cart = () => {
                 }))
             };
 
-            await OrderService.placeOrder(orderRequest);
-            clearCart();
-            setSuccess(true);
+            if (paymentMethod === 'cod') {
+                // Handle Cash on Delivery
+                await OrderService.placeOrder(orderRequest);
+                clearCart();
+                setSuccess(true);
+                setLoading(false);
+                return;
+            }
+
+            // 1. Create Razorpay Order on Backend
+            const paymentDetails = await OrderService.createPaymentOrder(orderRequest);
+
+            // 2. Configure Razorpay Options
+            const options = {
+                key: paymentDetails.key,
+                amount: paymentDetails.amount * 100, // paise
+                currency: paymentDetails.currency,
+                name: "AgriTrade",
+                description: "Direct Farm to Retail Purchase",
+                order_id: paymentDetails.razorpayOrderId,
+                handler: async function (response) {
+                    try {
+                        // 3. Verify Payment on Backend
+                        const verificationData = {
+                            razorpayOrderId: response.razorpay_order_id,
+                            razorpayPaymentId: response.razorpay_payment_id,
+                            razorpaySignature: response.razorpay_signature,
+                        };
+                        await OrderService.verifyPayment(verificationData);
+
+                        clearCart();
+                        setSuccess(true);
+                    } catch (err) {
+                        console.error(err);
+                        setError('Payment verification failed. Please contact support.');
+                    }
+                },
+                prefill: {
+                    name: user.fullName,
+                    email: user.email,
+                    contact: user.mobileNumber
+                },
+                theme: {
+                    color: "#22c55e"
+                },
+                modal: {
+                    ondismiss: function () {
+                        setLoading(false);
+                    }
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (response) {
+                setError(response.error.description);
+                setLoading(false);
+            });
+            rzp.open();
+
         } catch (err) {
             console.error(err);
-            setError('Failed to process your order. Please check your connection and try again.');
-        } finally {
+            const message = err.response?.data || 'Failed to initiate checkout. Please check your connection.';
+            setError(typeof message === 'string' ? message : 'Failed to initiate checkout.');
             setLoading(false);
         }
     };
@@ -251,6 +308,57 @@ const Cart = () => {
                             </div>
                         </div>
                     </section>
+
+                    <section className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                <CreditCard className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                            </div>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Payment Method</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label className={`relative flex items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'razorpay' ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10' : 'border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="razorpay"
+                                    checked={paymentMethod === 'razorpay'}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                    className="hidden"
+                                />
+                                <div className="flex items-center gap-3">
+                                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'razorpay' ? 'border-green-500 bg-green-500' : 'border-gray-300'}`}>
+                                        {paymentMethod === 'razorpay' && <div className="h-2 w-2 rounded-full bg-white" />}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-gray-900 dark:text-white">Razorpay</p>
+                                        <p className="text-xs text-gray-500">Secure Online Payment</p>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label className={`relative flex items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10' : 'border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}>
+                                <input
+                                    type="radio"
+                                    name="paymentMethod"
+                                    value="cod"
+                                    checked={paymentMethod === 'cod'}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                    className="hidden"
+                                />
+                                <div className="flex items-center gap-3">
+                                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'cod' ? 'border-green-500 bg-green-500' : 'border-gray-300'}`}>
+                                        {paymentMethod === 'cod' && <div className="h-2 w-2 rounded-full bg-white" />}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-gray-900 dark:text-white">Cash on Delivery</p>
+                                        <p className="text-xs text-gray-500">Pay when you receive</p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </section>
                 </div>
 
                 <div className="lg:col-span-4 mt-12 lg:mt-0 sticky top-24">
@@ -309,12 +417,21 @@ const Cart = () => {
                                     {loading ? (
                                         <>
                                             <div className="animate-spin rounded-full h-5 w-5 border-3 border-black border-t-transparent"></div>
-                                            SECURE PROCESSING...
+                                            {paymentMethod === 'razorpay' ? 'PAY WITH RAZORPAY' : 'PLACE ORDER (COD)'}
                                         </>
                                     ) : (
                                         <>
-                                            <ShieldCheck className="h-6 w-6" />
-                                            PLACE ORDER
+                                            {paymentMethod === 'razorpay' ? (
+                                                <>
+                                                    <ShieldCheck className="h-6 w-6" />
+                                                    PAY WITH RAZORPAY
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Truck className="h-6 w-6" />
+                                                    PLACE ORDER (COD)
+                                                </>
+                                            )}
                                         </>
                                     )}
                                 </button>

@@ -40,13 +40,25 @@ const getDashboardStats = async () => {
     return response.data;
 };
 
+const createPaymentOrder = async (orderRequest) => {
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/payments/create-order`, orderRequest, { headers: getAuthHeader() });
+    return response.data;
+};
+
+const verifyPayment = async (verificationData) => {
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/payments/verify-payment`, verificationData, { headers: getAuthHeader() });
+    return response.data;
+};
+
 const OrderService = {
     placeOrder,
     getMyOrders,
     getFarmerOrders,
     cancelOrder,
     updateOrderStatus,
-    getDashboardStats
+    getDashboardStats,
+    createPaymentOrder,
+    verifyPayment
 };
 
 export default OrderService;
