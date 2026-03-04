@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Base URL
-BASE_URL="http://localhost:8080/api"
+BASE_URL="https://farmtrade-backend-v2.onrender.com/api"
 
 echo "========================================"
 echo "      Testing Farmer-Retailer API"

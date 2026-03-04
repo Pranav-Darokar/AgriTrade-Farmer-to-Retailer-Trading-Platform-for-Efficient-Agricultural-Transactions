@@ -4,6 +4,7 @@ services:
     env: docker
     plan: free
     branch: main
+    healthCheckPath: /api/health
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://ep-spring-salad-aivnukkz-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require

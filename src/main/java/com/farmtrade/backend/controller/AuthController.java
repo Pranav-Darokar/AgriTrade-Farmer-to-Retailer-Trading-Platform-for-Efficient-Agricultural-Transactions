@@ -48,6 +48,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.url}")
+    private String frontendUrl;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -148,7 +151,7 @@ public class AuthController {
                 token, user);
         passwordResetTokenRepository.save(resetToken);
 
-        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
 
         emailService.sendSimpleMessage(
                 user.getEmail(),

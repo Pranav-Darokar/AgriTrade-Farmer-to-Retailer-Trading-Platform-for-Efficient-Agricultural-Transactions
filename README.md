@@ -67,6 +67,8 @@ Ensure you have the following installed:
     ./mvnw spring-boot:run
     ```
     The backend will start on `http://localhost:8080`.
+    *Live Backend:* `https://farmtrade-backend-v2.onrender.com`
+
 
 ### 💳 Razorpay Integration (Testing Mode)
 
