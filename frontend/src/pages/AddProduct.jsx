@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -21,10 +21,59 @@ const AddProduct = () => {
         quantity: '',
         unit: 'Kg',
         imageUrl: '',
-        category: 'Fresh Vegetables'
+        category: 'Fresh Vegetables',
+        perishable: false
     });
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
+                setCategories(response.data);
+                if (response.data.length > 0) {
+                    setFormData(prev => ({ ...prev, category: response.data[0].name }));
+                }
+            } catch (err) {
+                console.error("Failed to fetch categories", err);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    // Block PENDING farmers from accessing this page
+    if (user?.status === 'PENDING') {
+        return (
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-2xl shadow-xl overflow-hidden"
+                >
+                    <div className="bg-yellow-500 dark:bg-yellow-700 px-8 py-6">
+                        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                            <span>⏳</span> Account Pending Approval
+                        </h1>
+                        <p className="text-yellow-100 mt-1">Your account is being reviewed by an admin.</p>
+                    </div>
+                    <div className="p-8">
+                        <p className="text-yellow-800 dark:text-yellow-300 text-base">
+                            You cannot add products until your farmer account has been approved by an administrator.
+                            Once approved, you will have full access to list your produce and manage orders.
+                        </p>
+                        <button
+                            onClick={() => navigate('/dashboard')}
+                            className="mt-6 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition-colors"
+                        >
+                            Back to Dashboard
+                        </button>
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -100,7 +149,7 @@ const AddProduct = () => {
             navigate('/dashboard');
         } catch (err) {
             console.error(err);
-            setError('Failed to add product. Please try again.');
+            setError(err.response?.data?.message || err.response?.data || 'Failed to add product. Please try again.');
         } finally {
             setLoading(false);
             setUploading(false);
@@ -230,13 +279,27 @@ const AddProduct = () => {
                                     onChange={handleChange}
                                     className={inputClasses}
                                 >
-                                    <option value="Fresh Vegetables">Fresh Vegetables</option>
-                                    <option value="Fruits">Fruits</option>
-                                    <option value="Grains & Pulses">Grains & Pulses</option>
-                                    <option value="Dairy">Dairy</option>
-                                    <option value="Essentials">Essentials</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                    ))}
+                                    {categories.length === 0 && <option value="Uncategorized">Uncategorized</option>}
                                 </select>
                             </div>
+                        </div>
+
+                        <div className="flex items-center space-x-3 pt-6">
+                            <input
+                                type="checkbox"
+                                id="perishable"
+                                name="perishable"
+                                checked={formData.perishable}
+                                onChange={(e) => setFormData({ ...formData, perishable: e.target.checked })}
+                                className="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded transition-colors"
+                            />
+                            <label htmlFor="perishable" className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                                This product is highly perishable (e.g. Milk, Vegetables)
+                                <p className="text-xs font-normal text-gray-500 dark:text-gray-400">Restricts delivery beyond 150km to prevent spoilage.</p>
+                            </label>
                         </div>
                     </div>
 

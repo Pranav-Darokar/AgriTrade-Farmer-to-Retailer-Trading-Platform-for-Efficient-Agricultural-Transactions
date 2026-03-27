@@ -50,6 +50,41 @@ const verifyPayment = async (verificationData) => {
     return response.data;
 };
 
+const submitOrderReview = async (orderId, reviewData) => {
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/order-reviews/${orderId}`, reviewData, { headers: getAuthHeader() });
+    return response.data;
+};
+
+const getOrderReview = async (orderId) => {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/order-reviews/${orderId}`, { headers: getAuthHeader() });
+    return response.data;
+};
+
+const getFarmerProductReviews = async () => {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/farmer/reviews`, { headers: getAuthHeader() });
+    return response.data;
+};
+
+const getFarmerOrderReviews = async () => {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/order-reviews/farmer`, { headers: getAuthHeader() });
+    return response.data;
+};
+
+const getPublicFarmerProfile = async (farmerId) => {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/public/${farmerId}`);
+    return response.data;
+};
+
+const getPublicFarmerProductReviews = async (farmerId) => {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/public/farmers/${farmerId}/reviews`);
+    return response.data;
+};
+
+const getPublicFarmerOrderReviews = async (farmerId) => {
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/order-reviews/public/farmer/${farmerId}`);
+    return response.data;
+};
+
 const OrderService = {
     placeOrder,
     getMyOrders,
@@ -58,7 +93,14 @@ const OrderService = {
     updateOrderStatus,
     getDashboardStats,
     createPaymentOrder,
-    verifyPayment
+    verifyPayment,
+    submitOrderReview,
+    getOrderReview,
+    getFarmerProductReviews,
+    getFarmerOrderReviews,
+    getPublicFarmerProfile,
+    getPublicFarmerProductReviews,
+    getPublicFarmerOrderReviews
 };
 
 export default OrderService;

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import {
     Package, Clock, Calendar, User, IndianRupee, XCircle,
     AlertTriangle, ChevronRight, FileText, ShoppingBag,
-    Truck, CheckCircle, MapPin
+    Truck, CheckCircle, MapPin, Star, MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -14,6 +14,10 @@ const MyOrders = () => {
     const [error, setError] = useState('');
     const [cancellingId, setCancellingId] = useState(null);
     const [cancelling, setCancelling] = useState(false);
+    const [feedbackOrder, setFeedbackOrder] = useState(null);
+    const [feedbackRating, setFeedbackRating] = useState(5);
+    const [feedbackComment, setFeedbackComment] = useState('');
+    const [submittingFeedback, setSubmittingFeedback] = useState(false);
     const { user } = useAuth();
 
     const isFarmer = user?.roles?.some(role => role.includes('FARMER'));
@@ -58,6 +62,27 @@ const MyOrders = () => {
             setCancellingId(null);
         } finally {
             setCancelling(false);
+        }
+    };
+
+    const handleFeedbackSubmit = async () => {
+        if (!feedbackOrder) return;
+        setSubmittingFeedback(true);
+        try {
+            await OrderService.submitOrderReview(feedbackOrder.id, {
+                rating: feedbackRating,
+                comment: feedbackComment
+            });
+            // Update the local order state to indicate it has been reviewed
+            setOrders(prev => prev.map(o => o.id === feedbackOrder.id ? { ...o, hasReview: true } : o));
+            setFeedbackOrder(null);
+            setFeedbackRating(5);
+            setFeedbackComment('');
+        } catch (err) {
+            console.error('Error submitting feedback:', err);
+            alert(err?.response?.data?.message || 'Failed to submit feedback.');
+        } finally {
+            setSubmittingFeedback(false);
         }
     };
 
@@ -386,7 +411,16 @@ const MyOrders = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="bg-gray-50 dark:bg-gray-700/20 px-8 py-4 flex justify-end transition-colors group-hover:bg-green-50/30 dark:group-hover:bg-green-900/10">
+                                <div className="bg-gray-50 dark:bg-gray-700/20 px-8 py-4 flex justify-end items-center gap-4 transition-colors group-hover:bg-green-50/30 dark:group-hover:bg-green-900/10">
+                                    {!isFarmer && order.status === 'DELIVERED' && !order.hasReview && (
+                                        <button
+                                            onClick={() => setFeedbackOrder(order)}
+                                            className="text-xs font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-4 py-2 rounded-xl border border-green-200 dark:border-green-800/50 hover:bg-green-200 dark:hover:bg-green-900/50 transition-all flex items-center gap-2"
+                                        >
+                                            <Star className="h-4 w-4" />
+                                            Leave Feedback
+                                        </button>
+                                    )}
                                     <button className="text-xs font-bold text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 flex items-center transition-all group-hover:translate-x-1">
                                         View Details <ChevronRight className="h-4 w-4 ml-1" />
                                     </button>
@@ -396,6 +430,83 @@ const MyOrders = () => {
                     })}
                 </div>
             )}
+
+            {/* Feedback Modal */}
+            <AnimatePresence>
+                {feedbackOrder && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 ml-0">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setFeedbackOrder(null)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative w-full max-w-lg bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700"
+                        >
+                            <div className="p-8">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center text-green-600 dark:text-green-400">
+                                        <MessageSquare className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-black text-gray-900 dark:text-white transition-colors">Order Feedback</h2>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Share your experience for Order #{feedbackOrder.id}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Rate your experience</label>
+                                        <div className="flex items-center gap-2">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    onClick={() => setFeedbackRating(star)}
+                                                    className={`p-1 transition-all transform hover:scale-125 ${feedbackRating >= star ? 'text-amber-400' : 'text-gray-200 dark:text-gray-700'}`}
+                                                >
+                                                    <Star className={`h-8 w-8 ${feedbackRating >= star ? 'fill-current' : ''}`} />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Your message</label>
+                                        <textarea
+                                            value={feedbackComment}
+                                            onChange={(e) => setFeedbackComment(e.target.value)}
+                                            placeholder="How was the delivery and product quality?"
+                                            className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all text-gray-900 dark:text-white resize-none h-32"
+                                        />
+                                    </div>
+
+                                    <div className="flex gap-3 pt-2">
+                                        <button
+                                            onClick={handleFeedbackSubmit}
+                                            disabled={submittingFeedback}
+                                            className="flex-grow py-4 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-green-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                                        >
+                                            {submittingFeedback ? 'Submitting...' : 'Submit Feedback'}
+                                        </button>
+                                        <button
+                                            onClick={() => setFeedbackOrder(null)}
+                                            disabled={submittingFeedback}
+                                            className="px-6 py-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

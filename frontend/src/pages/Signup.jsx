@@ -34,9 +34,12 @@ const Signup = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const [successMessage, setSuccessMessage] = useState('');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccessMessage('');
 
         if (formData.password.length < 6) {
             setError('Password must be at least 6 characters long.');
@@ -46,7 +49,6 @@ const Signup = () => {
         setLoading(true);
         try {
             await register({
-                // No username
                 password: formData.password,
                 fullName: formData.fullName,
                 mobileNumber: formData.mobileNumber,
@@ -56,15 +58,19 @@ const Signup = () => {
                 dateOfBirth: formData.dateOfBirth,
                 aadhaarNumber: (formData.role === 'farmer' && formData.aadhaarNumber) ? formData.aadhaarNumber : null,
                 licenceNumber: formData.role === 'retailer' ? formData.licenceNumber : null,
-                contactInfo: formData.mobileNumber, // Fallback
-                role: [formData.role] // backend expects a Set/List
+                contactInfo: formData.mobileNumber,
+                role: [formData.role]
             });
-            navigate('/login');
+
+            if (formData.role === 'farmer') {
+                setSuccessMessage('Registration successful! Farmers must be verified by an admin before they can log in. This typically takes 24 hours.');
+                // Don't navigate immediately
+            } else {
+                navigate('/login');
+            }
         } catch (err) {
             console.error("Signup error:", err);
-            // Check if it is a validation error object
             if (err.response?.data && typeof err.response.data === 'object' && !err.response.data.message) {
-                // It might be our map of field errors
                 const fieldErrors = Object.values(err.response.data).join(', ');
                 setError(fieldErrors || 'Registration failed. Please checking your input.');
             } else {
@@ -285,6 +291,16 @@ const Signup = () => {
                     {error && (
                         <div className="text-red-500 dark:text-red-400 text-xs text-center bg-red-50 dark:bg-red-900/20 py-1.5 rounded-md border border-red-100 dark:border-red-800">
                             {error}
+                        </div>
+                    )}
+
+                    {successMessage && (
+                        <div className="text-green-600 dark:text-green-400 text-xs text-center bg-green-50 dark:bg-green-900/20 py-2.5 px-4 rounded-md border border-green-100 dark:border-green-800">
+                            <p className="font-bold mb-1">Success!</p>
+                            {successMessage}
+                            <div className="mt-2">
+                                <Link to="/login" className="underline font-black uppercase tracking-widest">Go to Login</Link>
+                            </div>
                         </div>
                     )}
 

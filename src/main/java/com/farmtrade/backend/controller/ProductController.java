@@ -2,6 +2,7 @@ package com.farmtrade.backend.controller;
 
 import com.farmtrade.backend.model.Product;
 import com.farmtrade.backend.service.ProductService;
+import com.farmtrade.backend.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,10 +20,15 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private ReviewService reviewService;
+
     // Public endpoint to view all products (for Retailers and browsing)
     @GetMapping("/public/products")
     public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+        List<Product> products = productService.getAllProducts();
+        products.forEach(reviewService::populateProductRatings);
+        return products;
     }
 
     // Farmer endpoints

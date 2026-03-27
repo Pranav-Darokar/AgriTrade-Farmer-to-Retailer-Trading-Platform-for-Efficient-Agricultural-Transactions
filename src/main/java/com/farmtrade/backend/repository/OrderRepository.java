@@ -34,10 +34,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT COUNT(DISTINCT o) FROM Order o JOIN o.items i WHERE i.product.farmer = :farmer")
     long countDistinctByItemsProductFarmer(User farmer);
 
-    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o JOIN o.items i WHERE i.product.farmer = :farmer")
+    @Query("SELECT COALESCE(SUM(i.quantity * i.pricePerUnit), 0) FROM Order o JOIN o.items i WHERE i.product.farmer = :farmer")
     BigDecimal sumTotalAmountByFarmer(User farmer);
 
-    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o JOIN o.items i WHERE i.product.farmer = :farmer AND o.paymentStatus = com.farmtrade.backend.model.PaymentStatus.COMPLETED")
+    @Query("SELECT COALESCE(SUM(i.quantity * i.pricePerUnit), 0) FROM Order o JOIN o.items i WHERE i.product.farmer = :farmer AND o.paymentStatus = com.farmtrade.backend.model.PaymentStatus.COMPLETED")
     BigDecimal sumCompletedAmountByFarmer(User farmer);
 
     @Query("SELECT DISTINCT o FROM Order o JOIN o.items i WHERE i.product.farmer = :farmer ORDER BY o.orderDate DESC")

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Users, BarChart3, Settings, TrendingUp, DollarSign, Trash2,
     RefreshCcw, ShieldCheck, Mail, Search, Activity, PieChart as PieIcon,
-    UserCheck, UserX, ShoppingBag, Package, X, ChevronRight, ArrowUpRight, ArrowDownRight, Clock
+    UserCheck, UserX, ShoppingBag, Package, X, ChevronRight, ArrowUpRight, ArrowDownRight, Clock, Star, Edit, Check
 } from 'lucide-react';
 import axios from 'axios';
 import {
@@ -21,6 +21,14 @@ const AdminDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRole, setFilterRole] = useState('ALL');
     const [showUsers, setShowUsers] = useState(false);
+    const [feedbacks, setFeedbacks] = useState([]);
+    const [orderReviews, setOrderReviews] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [editingCategoryId, setEditingCategoryId] = useState(null);
+    const [editingCategoryName, setEditingCategoryName] = useState('');
+    const [viewType, setViewType] = useState('USERS'); // 'USERS', 'FEEDBACK', 'REVIEWS' or 'CATEGORIES'
+
 
     const token = user?.token;
 
@@ -32,13 +40,19 @@ const AdminDashboard = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [statsRes, usersRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/stats`, authConfig),
-                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/users`, authConfig)
+                const [statsRes, usersRes, feedbacksRes, reviewsRes, categoriesRes] = await Promise.all([
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/stats`, authConfig).catch(err => ({ data: { users: 0, products: 0, orders: 0, revenue: 0 } })),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/users`, authConfig).catch(err => ({ data: [] })),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/feedback`, authConfig).catch(err => ({ data: [] })),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/order-reviews/all`, authConfig).catch(err => ({ data: [] })),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`).catch(err => ({ data: [] }))
                 ]);
 
                 setStats(statsRes.data);
                 setUsers(Array.isArray(usersRes.data) ? usersRes.data : []);
+                setFeedbacks(Array.isArray(feedbacksRes.data) ? feedbacksRes.data : []);
+                setOrderReviews(Array.isArray(reviewsRes.data) ? reviewsRes.data : []);
+                setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : []);
             } catch (error) {
                 console.error("Error fetching admin data:", error);
             } finally {
@@ -87,6 +101,49 @@ const AdminDashboard = () => {
             console.error("Error updating user status:", error);
             alert("Failed to update user status");
         }
+    };
+
+    const handleAddCategory = async () => {
+        if (!newCategoryName.trim()) return;
+        try {
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/categories`, { name: newCategoryName }, authConfig);
+            setNewCategoryName('');
+            setRefreshTrigger(prev => prev + 1);
+        } catch (error) {
+            console.error("Error adding category:", error);
+            const msg = error.response?.data?.message || typeof error.response?.data === 'string' ? error.response.data : "Failed to add category";
+            alert(msg);
+        }
+    };
+
+    const handleDeleteCategory = async (categoryId) => {
+        if (window.confirm('Are you sure you want to delete this category?')) {
+            try {
+                await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/categories/${categoryId}`, authConfig);
+                setRefreshTrigger(prev => prev + 1);
+            } catch (error) {
+                console.error("Error deleting category:", error);
+                alert("Failed to delete category");
+            }
+        }
+    };
+
+    const handleUpdateCategory = async (categoryId) => {
+        if (!editingCategoryName.trim()) return;
+        try {
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/categories/${categoryId}`, { name: editingCategoryName }, authConfig);
+            setEditingCategoryId(null);
+            setEditingCategoryName('');
+            setRefreshTrigger(prev => prev + 1);
+        } catch (error) {
+            console.error("Error updating category:", error);
+            alert("Failed to update category");
+        }
+    };
+
+    const startEditing = (category) => {
+        setEditingCategoryId(category.id);
+        setEditingCategoryName(category.name);
     };
 
     const filteredUsers = users.filter(u => {
@@ -298,231 +355,432 @@ const AdminDashboard = () => {
                 </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-                {/* User LIST Section */}
-                <div className="lg:col-span-3 space-y-6">
-                    {!showUsers ? (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center justify-between group transition-all hover:shadow-md border-l-4 border-l-green-500"
-                        >
-                            <div className="flex items-center gap-6">
-                                <div className="h-16 w-16 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Users className="h-8 w-8 text-green-600 dark:text-green-400" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Identity Management System</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium tracking-tight">Perform global CRUD operations on system participants.</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setShowUsers(true)}
-                                className="px-8 py-4 bg-gray-900 dark:bg-green-600 text-white font-black text-xs rounded-2xl transition-all shadow-lg hover:shadow-green-500/20 active:scale-95 uppercase tracking-widest flex items-center gap-3"
-                            >
-                                <Search size={16} /> Open Directory
-                            </button>
-                        </motion.div>
-                    ) : (
-                        <div className="space-y-6">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div className="relative flex-grow max-w-md">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                    <input
-                                        type="text"
-                                        placeholder="Search by name, email or number..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-green-500 transition-all outline-none text-gray-900 dark:text-white"
-                                    />
-                                </div>
-                                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-100 dark:border-gray-700">
-                                    {['ALL', 'FARMER', 'RETAILER'].map(role => (
-                                        <button
-                                            key={role}
-                                            onClick={() => setFilterRole(role)}
-                                            className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filterRole === role
-                                                ? 'bg-green-600 text-white shadow-lg shadow-green-600/20'
-                                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-                                                }`}
-                                        >
-                                            {role}
-                                        </button>
-                                    ))}
-                                    <button
-                                        onClick={() => setShowUsers(false)}
-                                        className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
-                                        title="Close Directory"
-                                    >
-                                        <X size={16} />
-                                    </button>
-                                </div>
+            <AnimatePresence>
+                {showUsers && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 40 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className="grid grid-cols-1 lg:grid-cols-4 gap-10 mt-12"
+                    >
+                        {/* User LIST Section */}
+                        <div className="lg:col-span-3 space-y-6">
+                            <div className="flex items-center gap-4 bg-white dark:bg-gray-800 p-2 rounded-2xl border border-gray-100 dark:border-gray-700 w-fit">
+                                <button
+                                    onClick={() => setViewType('USERS')}
+                                    className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewType === 'USERS' ? 'bg-green-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                                >
+                                    Users
+                                </button>
+                                <button
+                                    onClick={() => setViewType('FEEDBACK')}
+                                    className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewType === 'FEEDBACK' ? 'bg-green-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                                >
+                                    Feedback ({feedbacks.length})
+                                </button>
+                                <button
+                                    onClick={() => setViewType('REVIEWS')}
+                                    className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewType === 'REVIEWS' ? 'bg-green-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                                >
+                                    Order Reviews ({orderReviews.length})
+                                </button>
+                                <button
+                                    onClick={() => setViewType('CATEGORIES')}
+                                    className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewType === 'CATEGORIES' ? 'bg-green-600 text-white shadow-lg' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`}
+                                >
+                                    Categories ({categories.length})
+                                </button>
                             </div>
 
-                            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-50 dark:border-gray-700 overflow-hidden transition-colors">
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
-                                        <thead>
-                                            <tr className="bg-gray-50/50 dark:bg-gray-700/30">
-                                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Platform Identity</th>
-                                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Designation</th>
-                                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Account Status</th>
-                                                <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Operational Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                            <AnimatePresence mode="popLayout">
-                                                {filteredUsers.map((u) => (
-                                                    <motion.tr
-                                                        key={u.id}
-                                                        layout
-                                                        initial={{ opacity: 0 }}
-                                                        animate={{ opacity: 1 }}
-                                                        exit={{ opacity: 0 }}
-                                                        className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors group"
-                                                    >
-                                                        <td className="px-8 py-5 whitespace-nowrap">
-                                                            <div className="flex items-center gap-4">
-                                                                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-green-500/10">
-                                                                    {(u.fullName || u.username || u.email || '?').charAt(0).toUpperCase()}
-                                                                </div>
-                                                                <div>
-                                                                    <div className="text-sm font-black text-gray-900 dark:text-gray-100 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-                                                                        {u.fullName || u.username || u.name || 'Anonymous User'}
+                            {viewType === 'USERS' ? (
+                                <div className="space-y-6">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div className="relative flex-grow max-w-md">
+                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                placeholder="Search by name, email or number..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-green-500 transition-all outline-none text-gray-900 dark:text-white"
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-100 dark:border-gray-700">
+                                            {['ALL', 'FARMER', 'RETAILER'].map(role => (
+                                                <button
+                                                    key={role}
+                                                    onClick={() => setFilterRole(role)}
+                                                    className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filterRole === role
+                                                        ? 'bg-green-600 text-white shadow-lg shadow-green-600/20'
+                                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                                                        }`}
+                                                >
+                                                    {role}
+                                                </button>
+                                            ))}
+                                            <button
+                                                onClick={() => setShowUsers(false)}
+                                                className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                                                title="Close Directory"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-50 dark:border-gray-700 overflow-hidden transition-colors">
+                                        <div className="overflow-x-auto">
+                                            <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
+                                                <thead>
+                                                    <tr className="bg-gray-50/50 dark:bg-gray-700/30">
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Platform Identity</th>
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Designation</th>
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Account Status</th>
+                                                        <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Operational Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                                    <AnimatePresence mode="popLayout">
+                                                        {filteredUsers.map((u) => (
+                                                            <motion.tr
+                                                                key={u.id}
+                                                                layout
+                                                                initial={{ opacity: 0 }}
+                                                                animate={{ opacity: 1 }}
+                                                                exit={{ opacity: 0 }}
+                                                                className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors group"
+                                                            >
+                                                                <td className="px-8 py-5 whitespace-nowrap">
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-green-500/10">
+                                                                            {(u.fullName || u.username || u.email || '?').charAt(0).toUpperCase()}
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className="text-sm font-black text-gray-900 dark:text-gray-100 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                                                                                {u.fullName || u.username || u.name || 'Anonymous User'}
+                                                                            </div>
+                                                                            <div className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
+                                                                                <Mail className="h-3 w-3" /> {u.email || 'No email provided'}
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-                                                                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
-                                                                        <Mail className="h-3 w-3" /> {u.email || 'No email provided'}
+                                                                </td>
+                                                                <td className="px-8 py-5 whitespace-nowrap">
+                                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase tracking-widest ${getRoleStyle(u.role)}`}>
+                                                                        {u.role}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-8 py-5 whitespace-nowrap">
+                                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase tracking-widest ${getStatusStyle(u.status)}`}>
+                                                                        {u.status || 'PENDING'}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-8 py-5 whitespace-nowrap text-right space-x-2">
+                                                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                                                        {u.role !== 'ADMIN' && (
+                                                                            <>
+                                                                                {u.status !== 'APPROVED' && (
+                                                                                    <button
+                                                                                        onClick={() => handleUpdateStatus(u.id, 'APPROVED')}
+                                                                                        className="p-2 bg-green-50 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-xl hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                                                                                        title="Approve"
+                                                                                    >
+                                                                                        <UserCheck size={16} />
+                                                                                    </button>
+                                                                                )}
+                                                                                {u.status !== 'REJECTED' && (
+                                                                                    <button
+                                                                                        onClick={() => handleUpdateStatus(u.id, 'REJECTED')}
+                                                                                        className="p-2 bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+                                                                                        title="Reject"
+                                                                                    >
+                                                                                        <UserX size={16} />
+                                                                                    </button>
+                                                                                )}
+                                                                                <button
+                                                                                    onClick={() => handleDeleteUser(u.id)}
+                                                                                    className="p-2 bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-400 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                                                                                    title="Delete"
+                                                                                >
+                                                                                    <Trash2 size={16} />
+                                                                                </button>
+                                                                            </>
+                                                                        )}
                                                                     </div>
+                                                                </td>
+                                                            </motion.tr>
+                                                        ))}
+                                                    </AnimatePresence>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {filteredUsers.length === 0 && (
+                                            <div className="p-12 text-center">
+                                                <Activity className="h-12 w-12 text-gray-200 dark:text-gray-700 mx-auto mb-4" />
+                                                <p className="text-gray-500 dark:text-gray-400 font-bold">No matching agents found in current sector</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : viewType === 'FEEDBACK' ? (
+                                <div className="space-y-6">
+                                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors">
+                                        <div className="overflow-x-auto">
+                                            <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
+                                                <thead>
+                                                    <tr className="bg-gray-50/50 dark:bg-gray-700/30">
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">User</th>
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Subject</th>
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Message</th>
+                                                        <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                                    {feedbacks.map((f) => (
+                                                        <tr key={f.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
+                                                            <td className="px-8 py-5">
+                                                                <div className="text-sm font-black text-gray-900 dark:text-gray-100">{f.name}</div>
+                                                                <div className="text-xs text-gray-500 dark:text-gray-400">{f.email}</div>
+                                                            </td>
+                                                            <td className="px-8 py-5">
+                                                                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg">
+                                                                    {f.subject}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-8 py-5">
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400 max-w-md line-clamp-2">{f.message}</p>
+                                                            </td>
+                                                            <td className="px-8 py-5 text-right text-xs text-gray-400 font-medium">
+                                                                {new Date(f.createdAt).toLocaleDateString()}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {feedbacks.length === 0 && (
+                                            <div className="p-12 text-center">
+                                                <Mail className="h-12 w-12 text-gray-200 dark:text-gray-700 mx-auto mb-4" />
+                                                <p className="text-gray-500 dark:text-gray-400 font-bold">No feedback received yet</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : viewType === 'REVIEWS' ? (
+                                <div className="space-y-6">
+                                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors">
+                                        <div className="overflow-x-auto">
+                                            <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
+                                                <thead>
+                                                    <tr className="bg-gray-50/50 dark:bg-gray-700/30">
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Order Info</th>
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Retailer</th>
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Rating</th>
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Comment</th>
+                                                        <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                                    {orderReviews.map((r) => (
+                                                        <tr key={r.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
+                                                            <td className="px-8 py-5">
+                                                                <div className="text-sm font-black text-gray-900 dark:text-gray-100">Order #{r.order?.id}</div>
+                                                                <div className="text-xs text-green-600 font-bold">₹{r.order?.totalAmount}</div>
+                                                            </td>
+                                                            <td className="px-8 py-5">
+                                                                <div className="text-sm font-bold text-gray-800 dark:text-gray-200">{r.user?.fullName}</div>
+                                                                <div className="text-xs text-gray-500">{r.user?.email}</div>
+                                                            </td>
+                                                            <td className="px-8 py-5">
+                                                                <div className="flex text-amber-400">
+                                                                    {[...Array(5)].map((_, i) => (
+                                                                        <Star key={i} size={12} className={i < r.rating ? 'fill-current' : 'text-gray-300 dark:text-gray-600'} />
+                                                                    ))}
                                                                 </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-8 py-5 whitespace-nowrap">
-                                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase tracking-widest ${getRoleStyle(u.role)}`}>
-                                                                {u.role}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-8 py-5 whitespace-nowrap">
-                                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase tracking-widest ${getStatusStyle(u.status)}`}>
-                                                                {u.status || 'PENDING'}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-8 py-5 whitespace-nowrap text-right space-x-2">
-                                                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-                                                                {u.role !== 'ADMIN' && (
+                                                            </td>
+                                                            <td className="px-8 py-5">
+                                                                <p className="text-xs text-gray-600 dark:text-gray-400 max-w-xs">{r.comment}</p>
+                                                            </td>
+                                                            <td className="px-8 py-5 text-right text-xs text-gray-400 font-medium">
+                                                                {new Date(r.createdAt).toLocaleDateString()}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {orderReviews.length === 0 && (
+                                            <div className="p-12 text-center">
+                                                <Star className="h-12 w-12 text-gray-200 dark:text-gray-700 mx-auto mb-4" />
+                                                <p className="text-gray-500 dark:text-gray-400 font-bold">No order reviews yet</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : viewType === 'CATEGORIES' ? (
+                                <div className="space-y-6">
+                                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors p-6">
+                                        <div className="flex gap-4 mb-6">
+                                            <input
+                                                type="text"
+                                                placeholder="New category name..."
+                                                value={newCategoryName}
+                                                onChange={e => setNewCategoryName(e.target.value)}
+                                                className="flex-grow px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none text-gray-900 dark:text-white transition-all"
+                                            />
+                                            <button
+                                                onClick={handleAddCategory}
+                                                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors shadow-sm"
+                                            >
+                                                Add Category
+                                            </button>
+                                        </div>
+                                        <div className="overflow-x-auto">
+                                            <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
+                                                <thead>
+                                                    <tr className="bg-gray-50/50 dark:bg-gray-700/30">
+                                                        <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Category Name</th>
+                                                        <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                                    {categories.map((c) => (
+                                                        <tr key={c.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
+                                                            <td className="px-8 py-5">
+                                                                {editingCategoryId === c.id ? (
+                                                                    <input
+                                                                        type="text"
+                                                                        value={editingCategoryName}
+                                                                        onChange={(e) => setEditingCategoryName(e.target.value)}
+                                                                        className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-green-500 rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none text-gray-900 dark:text-white transition-all w-full"
+                                                                        autoFocus
+                                                                    />
+                                                                ) : (
+                                                                    <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{c.name}</span>
+                                                                )}
+                                                            </td>
+                                                            <td className="px-8 py-5 text-right flex justify-end gap-2">
+                                                                {editingCategoryId === c.id ? (
                                                                     <>
-                                                                        {u.status !== 'APPROVED' && (
-                                                                            <button
-                                                                                onClick={() => handleUpdateStatus(u.id, 'APPROVED')}
-                                                                                className="p-2 bg-green-50 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-xl hover:bg-green-600 hover:text-white transition-all shadow-sm"
-                                                                                title="Approve"
-                                                                            >
-                                                                                <UserCheck size={16} />
-                                                                            </button>
-                                                                        )}
-                                                                        {u.status !== 'REJECTED' && (
-                                                                            <button
-                                                                                onClick={() => handleUpdateStatus(u.id, 'REJECTED')}
-                                                                                className="p-2 bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm"
-                                                                                title="Reject"
-                                                                            >
-                                                                                <UserX size={16} />
-                                                                            </button>
-                                                                        )}
                                                                         <button
-                                                                            onClick={() => handleDeleteUser(u.id)}
-                                                                            className="p-2 bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-400 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
-                                                                            title="Delete"
+                                                                            onClick={() => handleUpdateCategory(c.id)}
+                                                                            className="p-2 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-xl hover:bg-green-600 hover:text-white transition-all shadow-sm"
+                                                                            title="Save Changes"
+                                                                        >
+                                                                            <Check size={16} />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => setEditingCategoryId(null)}
+                                                                            className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-600 hover:text-white transition-all shadow-sm"
+                                                                            title="Cancel"
+                                                                        >
+                                                                            <X size={16} />
+                                                                        </button>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <button
+                                                                            onClick={() => startEditing(c)}
+                                                                            className="p-2 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                                                            title="Edit Category"
+                                                                        >
+                                                                            <Edit size={16} />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => handleDeleteCategory(c.id)}
+                                                                            className="p-2 bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                                                                            title="Delete Category"
                                                                         >
                                                                             <Trash2 size={16} />
                                                                         </button>
                                                                     </>
                                                                 )}
-                                                            </div>
-                                                        </td>
-                                                    </motion.tr>
-                                                ))}
-                                            </AnimatePresence>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {filteredUsers.length === 0 && (
-                                    <div className="p-12 text-center">
-                                        <Activity className="h-12 w-12 text-gray-200 dark:text-gray-700 mx-auto mb-4" />
-                                        <p className="text-gray-500 dark:text-gray-400 font-bold">No matching agents found in current sector</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Sidebar Controls & Activity Table */}
-                <div className="space-y-8">
-                    {/* System Activity Table (The "New Table") */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-xl text-purple-600">
-                                <Clock className="h-5 w-5" />
-                            </div>
-                            <h3 className="text-lg font-black tracking-tight text-gray-900 dark:text-white">Recent Activity</h3>
-                        </div>
-                        <div className="space-y-4">
-                            {(stats.recentActivity || []).length > 0 ? (
-                                stats.recentActivity.map((activity, i) => (
-                                    <div key={i} className="flex items-center gap-4 group transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-2xl">
-                                        <div className={`h-10 w-10 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-black ${activity.type === 'FARMER' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'
-                                            }`}>
-                                            {activity.user.charAt(0)}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <div className="flex-grow overflow-hidden">
-                                            <p className="text-xs font-black text-gray-900 dark:text-gray-100 truncate">{activity.action}</p>
-                                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">{activity.user} • {activity.time}</p>
-                                        </div>
-                                        <ArrowUpRight size={14} className="text-gray-300 group-hover:text-green-500 transition-colors" />
+                                        {categories.length === 0 && (
+                                            <div className="p-12 text-center">
+                                                <Package className="h-12 w-12 text-gray-200 dark:text-gray-700 mx-auto mb-4" />
+                                                <p className="text-gray-500 dark:text-gray-400 font-bold">No categories exist yet</p>
+                                            </div>
+                                        )}
                                     </div>
-                                ))
-                            ) : (
-                                <p className="text-xs text-gray-400 text-center py-4">No recent activity detected</p>
-                            )}
+                                </div>
+                            ) : null}
                         </div>
-                        <button className="w-full mt-6 py-3 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest hover:text-green-600 transition-colors">
-                            View Server Logs
-                        </button>
-                    </div>
+                        {/* Sidebar Controls & Activity Table */}
+                        <div className="space-y-8">
+                            {/* System Activity Table (The "New Table") */}
+                            <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-xl text-purple-600">
+                                        <Clock className="h-5 w-5" />
+                                    </div>
+                                    <h3 className="text-lg font-black tracking-tight text-gray-900 dark:text-white">Recent Activity</h3>
+                                </div>
+                                <div className="space-y-4">
+                                    {(stats.recentActivity || []).length > 0 ? (
+                                        stats.recentActivity.map((activity, i) => (
+                                            <div key={i} className="flex items-center gap-4 group transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-2xl">
+                                                <div className={`h-10 w-10 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-black ${activity.type === 'FARMER' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'
+                                                    }`}>
+                                                    {activity.user.charAt(0)}
+                                                </div>
+                                                <div className="flex-grow overflow-hidden">
+                                                    <p className="text-xs font-black text-gray-900 dark:text-gray-100 truncate">{activity.action}</p>
+                                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">{activity.user} • {activity.time}</p>
+                                                </div>
+                                                <ArrowUpRight size={14} className="text-gray-300 group-hover:text-green-500 transition-colors" />
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-xs text-gray-400 text-center py-4">No recent activity detected</p>
+                                    )}
+                                </div>
+                                <button className="w-full mt-6 py-3 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest hover:text-green-600 transition-colors">
+                                    View Server Logs
+                                </button>
+                            </div>
 
-                    <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-green-900 dark:to-green-950 p-6 rounded-3xl shadow-xl text-white">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-white/10 rounded-xl">
-                                <Activity className="h-5 w-5 text-green-400" />
+                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-green-900 dark:to-green-950 p-6 rounded-3xl shadow-xl text-white">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 bg-white/10 rounded-xl">
+                                        <Activity className="h-5 w-5 text-green-400" />
+                                    </div>
+                                    <h3 className="text-lg font-black tracking-tight">System Intel</h3>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                                        <div className="flex justify-between items-end mb-2">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Efficiency</span>
+                                            <span className="text-sm font-black">94.8%</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                                            <div className="h-full bg-green-500 rounded-full w-[94.8%]"></div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                                        <div className="flex justify-between items-end mb-2">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Server Load</span>
+                                            <span className="text-sm font-black text-orange-400">Moderated</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                                            <div className="h-full bg-orange-500 rounded-full w-[65%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button className="w-full mt-6 py-3 bg-green-500 hover:bg-green-400 text-black font-black text-xs rounded-2xl transition-all shadow-lg shadow-green-500/20 active:scale-95 flex items-center justify-center gap-2">
+                                    <PieIcon size={14} /> EXPORT ANALYTICS
+                                </button>
                             </div>
-                            <h3 className="text-lg font-black tracking-tight">System Intel</h3>
                         </div>
-                        <div className="space-y-4">
-                            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                <div className="flex justify-between items-end mb-2">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Efficiency</span>
-                                    <span className="text-sm font-black">94.8%</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                                    <div className="h-full bg-green-500 rounded-full w-[94.8%]"></div>
-                                </div>
-                            </div>
-                            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                <div className="flex justify-between items-end mb-2">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Server Load</span>
-                                    <span className="text-sm font-black text-orange-400">Moderated</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                                    <div className="h-full bg-orange-500 rounded-full w-[65%]"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <button className="w-full mt-6 py-3 bg-green-500 hover:bg-green-400 text-black font-black text-xs rounded-2xl transition-all shadow-lg shadow-green-500/20 active:scale-95 flex items-center justify-center gap-2">
-                            <PieIcon size={14} /> EXPORT ANALYTICS
-                        </button>
-                    </div>
-                </div>
-            </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

@@ -223,11 +223,21 @@ const Cart = () => {
                                                 <div>
                                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white hover:text-green-600 transition-colors cursor-default">
                                                         {item.name}
+                                                        {item.perishable && (
+                                                            <span className="ml-2 px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider rounded-md border border-amber-200 dark:border-amber-800/50">
+                                                                Perishable
+                                                            </span>
+                                                        )}
                                                     </h3>
                                                     <p className="mt-1 text-sm font-bold text-green-600 dark:text-green-500 flex items-center">
                                                         <IndianRupee className="h-3.5 w-3.5" />
                                                         {item.price} <span className="text-gray-400 text-xs font-normal ml-1">/ {item.unit || 'Unit'}</span>
                                                     </p>
+                                                    {item.perishable && (
+                                                        <p className="mt-1 text-[10px] text-amber-500 font-bold flex items-center gap-1">
+                                                            <AlertCircle className="h-3 w-3" /> Requires fast delivery ({"<"} 150km recommended)
+                                                        </p>
+                                                    )}
                                                 </div>
                                                 <button
                                                     onClick={() => removeFromCart(item.id)}

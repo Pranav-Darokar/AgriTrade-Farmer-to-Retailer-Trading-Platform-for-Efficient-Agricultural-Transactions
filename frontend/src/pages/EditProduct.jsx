@@ -24,9 +24,20 @@ const EditProduct = () => {
     });
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [categories, setCategories] = useState([]);
 
     useEffect(() => {
         fetchProductDetails();
+
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/categories`);
+                setCategories(response.data);
+            } catch (err) {
+                console.error("Failed to fetch categories", err);
+            }
+        };
+        fetchCategories();
     }, [id]);
 
     const fetchProductDetails = async () => {
@@ -274,11 +285,10 @@ const EditProduct = () => {
                                     onChange={handleChange}
                                     className={inputClasses}
                                 >
-                                    <option value="Fresh Vegetables">Fresh Vegetables</option>
-                                    <option value="Fruits">Fruits</option>
-                                    <option value="Grains & Pulses">Grains & Pulses</option>
-                                    <option value="Dairy">Dairy</option>
-                                    <option value="Essentials">Essentials</option>
+                                    {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                    ))}
+                                    {categories.length === 0 && <option value="Uncategorized">Uncategorized</option>}
                                 </select>
                             </div>
                         </div>

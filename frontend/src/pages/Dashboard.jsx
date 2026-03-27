@@ -5,7 +5,7 @@ import OrderService from '../services/OrderService';
 import { motion } from 'framer-motion';
 import {
     Plus, ShoppingBag, List, TrendingUp, IndianRupee, Package,
-    Calendar, Clock, User, ArrowRight, Loader2, BadgeCheck
+    Calendar, Clock, User, ArrowRight, Loader2, BadgeCheck, AlertTriangle, Lock
 } from 'lucide-react';
 
 const STATUS_STYLES = {
@@ -24,6 +24,7 @@ const Dashboard = () => {
 
     const isFarmer = user?.roles?.some(role => role.includes('FARMER'));
     const isRetailer = user?.roles?.some(role => role.includes('RETAILER'));
+    const isPendingFarmer = isFarmer && user?.status === 'PENDING';
 
     useEffect(() => {
         if (user) {
@@ -81,6 +82,29 @@ const Dashboard = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Pending Approval Banner */}
+            {isPendingFarmer && (
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6 flex items-start gap-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-xl p-5 shadow-sm"
+                >
+                    <div className="flex-shrink-0 mt-0.5">
+                        <AlertTriangle className="h-6 w-6 text-yellow-500 dark:text-yellow-400" />
+                    </div>
+                    <div>
+                        <h3 className="text-base font-semibold text-yellow-800 dark:text-yellow-300">
+                            Account Pending Admin Approval
+                        </h3>
+                        <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-400">
+                            Your farmer account is currently under review. Once an admin approves your registration,
+                            you will be able to add products, manage listings, and receive orders.
+                            Please check back later or contact support if you have any questions.
+                        </p>
+                    </div>
+                </motion.div>
+            )}
+
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                     Welcome back, <span className="text-green-600 dark:text-green-400">{user?.fullName?.split(' ')[0] || user?.username}</span>!
@@ -329,33 +353,50 @@ const Dashboard = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {isFarmer && (
                                 <>
-                                    <Link to="/add-product" className="group flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-green-200 dark:hover:border-green-700">
-                                        <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors">
-                                            <Plus className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                    {isPendingFarmer ? (
+                                        /* Locked state for pending farmers */
+                                        <div className="col-span-full flex items-center gap-4 p-5 bg-gray-50 dark:bg-gray-800/60 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
+                                            <div className="flex-shrink-0 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                                <Lock className="h-6 w-6 text-gray-400 dark:text-gray-500" />
+                                            </div>
+                                            <div>
+                                                <p className="text-base font-medium text-gray-600 dark:text-gray-400">Actions Locked</p>
+                                                <p className="text-sm text-gray-400 dark:text-gray-500">
+                                                    Product management and order features will be available once your account is approved.
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="ml-4">
-                                            <p className="text-lg font-medium text-gray-900 dark:text-white">Add New Product</p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">List your produce for sale</p>
-                                        </div>
-                                    </Link>
-                                    <Link to="/my-products" className="group flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-green-200 dark:hover:border-green-700">
-                                        <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors">
-                                            <List className="h-6 w-6 text-green-600 dark:text-green-400" />
-                                        </div>
-                                        <div className="ml-4">
-                                            <p className="text-lg font-medium text-gray-900 dark:text-white">My Listings</p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">Manage your current inventory</p>
-                                        </div>
-                                    </Link>
-                                    <Link to="/farmer-orders" className="group flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-orange-200 dark:hover:border-orange-700">
-                                        <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-lg group-hover:bg-orange-100 dark:group-hover:bg-orange-900/50 transition-colors">
-                                            <ShoppingBag className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-                                        </div>
-                                        <div className="ml-4">
-                                            <p className="text-lg font-medium text-gray-900 dark:text-white">Incoming Orders</p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">Manage and fulfil retailer orders</p>
-                                        </div>
-                                    </Link>
+                                    ) : (
+                                        <>
+                                            <Link to="/add-product" className="group flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-green-200 dark:hover:border-green-700">
+                                                <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors">
+                                                    <Plus className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                                </div>
+                                                <div className="ml-4">
+                                                    <p className="text-lg font-medium text-gray-900 dark:text-white">Add New Product</p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">List your produce for sale</p>
+                                                </div>
+                                            </Link>
+                                            <Link to="/my-products" className="group flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-green-200 dark:hover:border-green-700">
+                                                <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors">
+                                                    <List className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                                </div>
+                                                <div className="ml-4">
+                                                    <p className="text-lg font-medium text-gray-900 dark:text-white">My Listings</p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">Manage your current inventory</p>
+                                                </div>
+                                            </Link>
+                                            <Link to="/farmer-orders" className="group flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700 hover:border-orange-200 dark:hover:border-orange-700">
+                                                <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-lg group-hover:bg-orange-100 dark:group-hover:bg-orange-900/50 transition-colors">
+                                                    <ShoppingBag className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                                                </div>
+                                                <div className="ml-4">
+                                                    <p className="text-lg font-medium text-gray-900 dark:text-white">Incoming Orders</p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">Manage and fulfil retailer orders</p>
+                                                </div>
+                                            </Link>
+                                        </>
+                                    )}
                                 </>
                             )}
 

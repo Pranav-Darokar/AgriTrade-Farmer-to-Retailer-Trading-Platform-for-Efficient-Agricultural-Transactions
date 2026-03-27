@@ -27,6 +27,9 @@ public class OrderService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Transactional
     public Order placeOrder(OrderRequest orderRequest, String email) {
         User retailer = userRepository.findByEmail(email)
@@ -52,6 +55,27 @@ public class OrderService {
                 throw new RuntimeException("Insufficient stock for product: " + product.getName());
             }
 
+            // PERISHABILITY CHECK: Calculate distance between Farmer and Retailer
+            if (product.getPerishable() != null && product.getPerishable()) {
+                User farmer = product.getFarmer();
+                if (farmer.getLatitude() != null && farmer.getLongitude() != null &&
+                        retailer.getLatitude() != null && retailer.getLongitude() != null) {
+
+                    double distance = calculateDistance(
+                            farmer.getLatitude(), farmer.getLongitude(),
+                            retailer.getLatitude(), retailer.getLongitude());
+
+                    // Threshold: 150km for standard perishable delivery
+                    // If distance is > 200km, it's very likely to spoil without cold chain
+                    if (distance > 150.0) {
+                        throw new RuntimeException("Product " + product.getName()
+                                + " is highly perishable and cannot be delivered to your location (Distance: "
+                                + String.format("%.2f", distance)
+                                + " km). Maximum delivery distance for this item is 150km.");
+                    }
+                }
+            }
+
             // Decrement stock
             product.setQuantity(product.getQuantity() - itemRequest.getQuantity());
             productRepository.save(product);
@@ -62,16 +86,49 @@ public class OrderService {
             orderItem.setQuantity(itemRequest.getQuantity());
             orderItem.setPricePerUnit(product.getPrice());
 
-            orderItems.add(orderItem);
+            order.getItems().add(orderItem);
 
             BigDecimal itemTotal = product.getPrice().multiply(new BigDecimal(itemRequest.getQuantity()));
             totalAmount = totalAmount.add(itemTotal);
         }
 
-        order.setItems(orderItems);
         order.setTotalAmount(totalAmount);
+        Order savedOrder = orderRepository.save(order);
 
-        return orderRepository.save(order);
+        // Notify Farmers
+        savedOrder.getItems().stream()
+                .map(item -> item.getProduct().getFarmer())
+                .distinct()
+                .forEach(farmer -> {
+                    notificationService.createNotification(
+                            farmer,
+                            "New Order Received!",
+                            "You have a new order (#" + savedOrder.getId() + ") from " + retailer.getFullName(),
+                            "ORDER_NEW");
+                });
+
+        // Notify Retailer
+        notificationService.createNotification(
+                retailer,
+                "Order Placed Successfully",
+                "Your order #" + savedOrder.getId() + " has been placed and is waiting for farmer confirmation.",
+                "ORDER_CONFIRMED");
+
+        return savedOrder;
+    }
+
+    /**
+     * Haversine formula to calculate distance between two points
+     */
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Earth radius in km
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 
     public List<Order> getOrdersByRetailer(String email) {
@@ -116,7 +173,22 @@ public class OrderService {
         }
 
         order.setStatus(OrderStatus.CANCELLED);
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        // Notify Farmers about cancellation
+        savedOrder.getItems().stream()
+                .map(item -> item.getProduct().getFarmer())
+                .distinct()
+                .forEach(farmer -> {
+                    notificationService.createNotification(
+                            farmer,
+                            "Order Cancelled",
+                            "Order #" + savedOrder.getId() + " has been cancelled by the retailer ("
+                                    + retailer.getFullName() + ")",
+                            "ORDER_CANCELLED");
+                });
+
+        return savedOrder;
     }
 
     @Transactional
@@ -141,6 +213,15 @@ public class OrderService {
             throw new RuntimeException("Invalid order status: " + newStatus);
         }
 
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        // Notify Retailer about status update
+        notificationService.createNotification(
+                order.getRetailer(),
+                "Order Status Updated",
+                "Your order #" + order.getId() + " is now " + newStatus,
+                "ORDER_STATUS_UPDATE");
+
+        return savedOrder;
     }
 }

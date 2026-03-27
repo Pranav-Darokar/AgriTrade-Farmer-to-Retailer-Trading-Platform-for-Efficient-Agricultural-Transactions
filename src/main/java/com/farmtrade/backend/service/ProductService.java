@@ -21,6 +21,10 @@ public class ProductService {
     public Product addProduct(Product product, String email) {
         User farmer = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Farmer not found"));
+        if (farmer.getStatus() != com.farmtrade.backend.model.UserStatus.APPROVED) {
+            throw new RuntimeException(
+                    "Your account is pending approval. You can only add products after admin verification.");
+        }
         product.setFarmer(farmer);
         return productRepository.save(product);
     }
@@ -48,6 +52,13 @@ public class ProductService {
             throw new RuntimeException("You are not authorized to update this product");
         }
 
+        User farmer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Farmer not found"));
+        if (farmer.getStatus() != com.farmtrade.backend.model.UserStatus.APPROVED) {
+            throw new RuntimeException(
+                    "Your account is pending approval. You can only manage products after admin verification.");
+        }
+
         product.setName(productDetails.getName());
         product.setDescription(productDetails.getDescription());
         product.setPrice(productDetails.getPrice());
@@ -55,6 +66,8 @@ public class ProductService {
         product.setUnit(productDetails.getUnit());
         product.setCategory(productDetails.getCategory());
         product.setImageUrl(productDetails.getImageUrl());
+        product.setPerishable(productDetails.getPerishable());
+        product.setShelfLifeHours(productDetails.getShelfLifeHours());
 
         return productRepository.save(product);
     }
@@ -65,6 +78,13 @@ public class ProductService {
 
         if (!product.getFarmer().getEmail().equals(email)) {
             throw new RuntimeException("You are not authorized to delete this product");
+        }
+
+        User farmer = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Farmer not found"));
+        if (farmer.getStatus() != com.farmtrade.backend.model.UserStatus.APPROVED) {
+            throw new RuntimeException(
+                    "Your account is pending approval. You can only manage products after admin verification.");
         }
 
         productRepository.delete(product);

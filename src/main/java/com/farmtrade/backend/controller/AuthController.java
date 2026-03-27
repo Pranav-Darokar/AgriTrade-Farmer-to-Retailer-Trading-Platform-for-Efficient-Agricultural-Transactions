@@ -78,7 +78,8 @@ public class AuthController {
                     userDetails.getDateOfBirth() != null ? userDetails.getDateOfBirth().toString() : null,
                     userDetails.getAadhaarNumber(),
                     userDetails.getLicenceNumber(),
-                    userDetails.getProfilePhoto()));
+                    userDetails.getProfilePhoto(),
+                    userDetails.getStatus() != null ? userDetails.getStatus().name() : null));
         } catch (DisabledException e) {
             return ResponseEntity.badRequest().body(
                     new MessageResponse("Error: Account is pending approval. Please wait for admin verification."));
@@ -118,7 +119,11 @@ public class AuthController {
             user.setAadhaarNumber(signUpRequest.getAadhaarNumber());
         }
 
-        user.setStatus(UserStatus.APPROVED); // Allow login immediately after signup
+        if (user.getRole() == Role.FARMER) {
+            user.setStatus(UserStatus.PENDING);
+        } else {
+            user.setStatus(UserStatus.APPROVED);
+        }
 
         userRepository.save(user);
 

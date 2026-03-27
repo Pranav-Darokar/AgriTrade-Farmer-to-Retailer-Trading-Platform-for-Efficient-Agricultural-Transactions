@@ -5,11 +5,12 @@ import { useTheme } from '../context/ThemeContext';
 import {
     Menu, X, LogOut, User, ShoppingCart, ClipboardList,
     Moon, Sun, ChevronDown, Package, LayoutDashboard,
-    ShieldCheck, Store, Sprout, ChevronRight
+    ShieldCheck, Store, Sprout, ChevronRight, MessageSquare
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '../assets/logo.png';
+import NotificationCenter from './NotificationCenter';
 
 const NavLink = ({ to, children, onClick }) => {
     const { pathname } = useLocation();
@@ -161,6 +162,9 @@ const Navbar = () => {
                             </Link>
                         )}
 
+                        {/* Notifications */}
+                        {user && <NotificationCenter />}
+
                         {/* Dark mode toggle */}
                         <button
                             onClick={toggleDark}
@@ -239,13 +243,41 @@ const Navbar = () => {
                                                 View Profile
                                             </Link>
                                             {isFarmer && (
+                                                <>
+                                                    <Link
+                                                        to="/my-products"
+                                                        onClick={() => setProfileOpen(false)}
+                                                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                    >
+                                                        <Package size={15} className="text-green-600" />
+                                                        My Products
+                                                    </Link>
+                                                    <Link
+                                                        to="/farmer-orders"
+                                                        onClick={() => setProfileOpen(false)}
+                                                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                    >
+                                                        <ClipboardList size={15} className="text-green-600" />
+                                                        Farmer Orders
+                                                    </Link>
+                                                    <Link
+                                                        to="/farmer-reviews"
+                                                        onClick={() => setProfileOpen(false)}
+                                                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                                    >
+                                                        <MessageSquare size={15} className="text-green-600" />
+                                                        Reviews & Feedback
+                                                    </Link>
+                                                </>
+                                            )}
+                                            {isRetailer && (
                                                 <Link
-                                                    to="/my-products"
+                                                    to="/my-orders"
                                                     onClick={() => setProfileOpen(false)}
                                                     className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                                 >
-                                                    <Package size={15} className="text-green-600" />
-                                                    My Products
+                                                    <ClipboardList size={15} className="text-green-600" />
+                                                    My Orders
                                                 </Link>
                                             )}
                                             <div className="border-t border-gray-100 dark:border-gray-700" />
@@ -287,6 +319,7 @@ const Navbar = () => {
                                 )}
                             </Link>
                         )}
+                        {user && <NotificationCenter />}
                         <button
                             onClick={toggleDark}
                             aria-label="Toggle dark mode"
@@ -371,14 +404,24 @@ const Navbar = () => {
                                             </div>
                                         </Link>
                                         {isFarmer && (
-                                            <Link
-                                                to="/my-products"
-                                                onClick={() => setIsOpen(false)}
-                                                className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                            >
-                                                <Package size={15} className="text-green-600" />
-                                                My Products
-                                            </Link>
+                                            <>
+                                                <Link
+                                                    to="/my-products"
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                                >
+                                                    <Package size={15} className="text-green-600" />
+                                                    My Products
+                                                </Link>
+                                                <Link
+                                                    to="/farmer-reviews"
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                                >
+                                                    <MessageSquare size={15} className="text-green-600" />
+                                                    Reviews & Feedback
+                                                </Link>
+                                            </>
                                         )}
                                         <button
                                             onClick={handleLogout}

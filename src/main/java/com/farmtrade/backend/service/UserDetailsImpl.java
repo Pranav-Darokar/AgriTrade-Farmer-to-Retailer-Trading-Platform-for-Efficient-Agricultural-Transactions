@@ -110,8 +110,13 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        // Only allow login if status is APPROVED
-        return status == UserStatus.APPROVED;
+        // Allow login for all users regardless of status.
+        // Activity restrictions for PENDING farmers are enforced at the service layer.
+        return status != UserStatus.REJECTED;
+    }
+
+    public UserStatus getStatus() {
+        return status;
     }
 
     public String getEmail() {

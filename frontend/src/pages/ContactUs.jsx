@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
+import axios from 'axios';
 
 const contactDetails = [
     { icon: <Mail className="h-5 w-5 text-green-500" />, label: 'Email Us', value: 'support@agritrade.in', href: 'mailto:support@agritrade.in' },
@@ -19,10 +20,15 @@ export default function ContactUs() {
     const handleSubmit = async e => {
         e.preventDefault();
         setLoading(true);
-        // Simulate async send
-        await new Promise(r => setTimeout(r, 1200));
-        setLoading(false);
-        setSubmitted(true);
+        try {
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/public/feedback`, form);
+            setSubmitted(true);
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+            alert('Failed to send message. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

@@ -9,14 +9,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
 
@@ -91,10 +84,21 @@ public class UserController {
             user.setGender(updatedUser.getGender());
         if (updatedUser.getDateOfBirth() != null)
             user.setDateOfBirth(updatedUser.getDateOfBirth());
+        if (updatedUser.getLatitude() != null)
+            user.setLatitude(updatedUser.getLatitude());
+        if (updatedUser.getLongitude() != null)
+            user.setLongitude(updatedUser.getLongitude());
         // Add other fields as needed
 
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("Profile updated successfully!"));
+    }
+
+    @GetMapping("/public/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return userRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

@@ -24,6 +24,9 @@ public class DataInitializer implements CommandLineRunner {
         ProductRepository productRepository;
 
         @Autowired
+        com.farmtrade.backend.repository.CategoryRepository categoryRepository;
+
+        @Autowired
         PasswordEncoder encoder;
 
         @Override
@@ -76,6 +79,16 @@ public class DataInitializer implements CommandLineRunner {
                 // Seed Premium Products if marketplace is empty
                 if (productRepository.count() == 0) {
                         seedPremiumProducts(farmer);
+                }
+
+                // Seed Categories
+                if (categoryRepository.count() == 0) {
+                        List<String> defaultCategories = Arrays.asList(
+                                        "Fresh Vegetables", "Fruits", "Grains & Pulses", "Dairy", "Essentials");
+                        for (String catName : defaultCategories) {
+                                categoryRepository.save(new com.farmtrade.backend.model.Category(catName));
+                        }
+                        System.out.println("Default categories seeded successfully!");
                 }
         }
 

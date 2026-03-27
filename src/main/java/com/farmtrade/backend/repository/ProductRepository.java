@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByFarmer(User farmer);
+
+    List<Product> findByCategory(String category);
 }

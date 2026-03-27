@@ -13,9 +13,11 @@ import AddProduct from './pages/AddProduct';
 import EditProduct from './pages/EditProduct';
 import MyProducts from './pages/MyProducts';
 import Marketplace from './pages/Marketplace';
+import FarmerProfile from './pages/FarmerProfile';
 import Cart from './pages/Cart';
 import MyOrders from './pages/MyOrders';
 import FarmerOrders from './pages/FarmerOrders';
+import FarmerReviews from './pages/FarmerReviews';
 import Profile from './pages/Profile';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -54,6 +56,7 @@ function App() {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/products" element={<Marketplace />} />
+                  <Route path="/farmer-profile/:id" element={<FarmerProfile />} />
 
                   {/* Protected — any logged-in user */}
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -63,6 +66,7 @@ function App() {
                   <Route path="/edit-product/:id" element={<ProtectedRoute><EditProduct /></ProtectedRoute>} />
                   <Route path="/my-products" element={<ProtectedRoute><MyProducts /></ProtectedRoute>} />
                   <Route path="/farmer-orders" element={<ProtectedRoute><FarmerOrders /></ProtectedRoute>} />
+                  <Route path="/farmer-reviews" element={<ProtectedRoute><FarmerReviews /></ProtectedRoute>} />
                   <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
                   <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
 
